@@ -1,16 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
+import { SignIn, SignUp, useUser } from "@clerk/nextjs";
 
 export function AuthModal() {
   const { isAuthOpen, setIsAuthOpen, authTab, setAuthTab } = useCart();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [rememberMe, setRememberMe] = useState(true);
-  const [submitted, setSubmitted] = useState(false);
+  const { isSignedIn } = useUser();
 
   // Close on Escape key
   useEffect(() => {
@@ -37,15 +34,6 @@ export function AuthModal() {
 
   if (!isAuthOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setIsAuthOpen(false);
-      setSubmitted(false);
-    }, 1200);
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-10">
       {/* Backdrop */}
@@ -57,7 +45,7 @@ export function AuthModal() {
 
       {/* Modal Dialog */}
       <div
-        className="relative z-10 w-full max-w-[900px] overflow-hidden border border-ory-divider/50 bg-ory-cream shadow-2xl transition-all"
+        className="relative z-10 w-full max-w-[950px] overflow-hidden border border-ory-divider/50 bg-ory-cream shadow-2xl transition-all"
         role="dialog"
         aria-modal="true"
         aria-labelledby="auth-modal-title"
@@ -72,10 +60,10 @@ export function AuthModal() {
           ✕
         </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-12">
+        <div className="grid grid-cols-1 md:grid-cols-12 items-center">
           {/* Left Column: Atmospheric imagery + Client testimonial */}
-          <div className="relative hidden md:col-span-5 md:block">
-            <div className="relative h-full min-h-[580px] w-full bg-ory-surface">
+          <div className="relative hidden md:col-span-5 md:block h-full min-h-[620px]">
+            <div className="relative h-full w-full bg-ory-surface">
               <Image
                 src="/images/hero/candle-linen.jpg"
                 alt="Lighting candle with sulfur match"
@@ -98,15 +86,15 @@ export function AuthModal() {
             </div>
           </div>
 
-          {/* Right Column: Sign In / Create Account Form */}
-          <div className="flex flex-col justify-between p-8 sm:p-10 md:col-span-7">
+          {/* Right Column: Clerk Auth Components */}
+          <div className="flex flex-col justify-between p-6 sm:p-8 md:col-span-7 max-h-[90vh] overflow-y-auto">
             <div>
               <span className="text-[10px] uppercase tracking-[0.22em] text-ory-accent font-medium">
-                Atelier Account
+                Atelier Account (Clerk Secure)
               </span>
               <h2
                 id="auth-modal-title"
-                className="mt-1 font-serif text-[32px] uppercase tracking-[0.06em] text-ory-ink"
+                className="mt-1 font-serif text-[28px] uppercase tracking-[0.06em] text-ory-ink"
               >
                 Return to Calm.
               </h2>
@@ -115,7 +103,7 @@ export function AuthModal() {
               </p>
 
               {/* Tabs */}
-              <div className="mt-6 flex border-b border-ory-divider/40 text-[11px] uppercase tracking-[0.18em]">
+              <div className="mt-4 flex border-b border-ory-divider/40 text-[11px] uppercase tracking-[0.18em]">
                 <button
                   type="button"
                   onClick={() => setAuthTab("signin")}
@@ -140,102 +128,57 @@ export function AuthModal() {
                 </button>
               </div>
 
-              {/* Form */}
-              <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-                {authTab === "register" && (
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-ory-muted">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Astrid Lind"
-                      className="mt-1.5 h-11 w-full border border-ory-divider/60 bg-ory-cream-deep px-3.5 text-[13px] text-ory-ink focus:border-ory-ink focus:outline-hidden"
-                    />
-                  </div>
+              {/* Clerk Widget container */}
+              <div className="mt-6 flex justify-center">
+                {authTab === "signin" ? (
+                  <SignIn
+                    routing="hash"
+                    appearance={{
+                      elements: {
+                        rootBox: "w-full shadow-none",
+                        card: "bg-transparent shadow-none p-0 w-full",
+                        headerTitle: "hidden",
+                        headerSubtitle: "hidden",
+                        formButtonPrimary:
+                          "bg-ory-ink hover:bg-ory-ink/90 text-white uppercase tracking-[0.18em] text-[11px] h-11 rounded-none",
+                        formFieldInput:
+                          "bg-ory-cream-deep border-ory-divider/60 rounded-none text-ory-ink h-11",
+                        footerAction: "hidden",
+                      },
+                    }}
+                  />
+                ) : (
+                  <SignUp
+                    routing="hash"
+                    appearance={{
+                      elements: {
+                        rootBox: "w-full shadow-none",
+                        card: "bg-transparent shadow-none p-0 w-full",
+                        headerTitle: "hidden",
+                        headerSubtitle: "hidden",
+                        formButtonPrimary:
+                          "bg-ory-ink hover:bg-ory-ink/90 text-white uppercase tracking-[0.18em] text-[11px] h-11 rounded-none",
+                        formFieldInput:
+                          "bg-ory-cream-deep border-ory-divider/60 rounded-none text-ory-ink h-11",
+                        footerAction: "hidden",
+                      },
+                    }}
+                  />
                 )}
-
-                <div>
-                  <label className="block text-[10px] uppercase tracking-[0.16em] text-ory-muted">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="atelier@oryenna.com"
-                    className="mt-1.5 h-11 w-full border border-ory-divider/60 bg-ory-cream-deep px-3.5 text-[13px] text-ory-ink focus:border-ory-ink focus:outline-hidden"
-                  />
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between">
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-ory-muted">
-                      Password
-                    </label>
-                    {authTab === "signin" && (
-                      <button
-                        type="button"
-                        className="text-[10px] uppercase tracking-[0.14em] text-ory-muted hover:text-ory-ink"
-                      >
-                        Forgot?
-                      </button>
-                    )}
-                  </div>
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="mt-1.5 h-11 w-full border border-ory-divider/60 bg-ory-cream-deep px-3.5 text-[13px] text-ory-ink focus:border-ory-ink focus:outline-hidden"
-                  />
-                </div>
-
-                <div className="flex items-center gap-2 pt-1">
-                  <input
-                    type="checkbox"
-                    id="remember"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="size-3.5 rounded-none border-ory-divider text-ory-ink focus:ring-0"
-                  />
-                  <label htmlFor="remember" className="text-[11px] text-ory-muted">
-                    Remember me on this browser
-                  </label>
-                </div>
-
-                <button
-                  type="submit"
-                  className="mt-4 flex h-[46px] w-full items-center justify-center border border-ory-ink bg-ory-ink text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-all hover:bg-ory-ink/90 active:scale-[0.98]"
-                >
-                  {submitted
-                    ? "Welcome Back ✓"
-                    : authTab === "signin"
-                    ? "Sign In to Oryenna"
-                    : "Join the Atelier"}
-                </button>
-              </form>
+              </div>
             </div>
 
             {/* Member Perks Checklist */}
-            <div className="mt-8 border-t border-ory-divider/30 pt-5">
+            <div className="mt-6 border-t border-ory-divider/30 pt-4">
               <p className="text-[10px] uppercase tracking-[0.18em] font-medium text-ory-ink">
                 Atelier Member Privileges:
               </p>
-              <ul className="mt-2 space-y-1.5 text-[11px] text-ory-muted">
+              <ul className="mt-1.5 space-y-1 text-[11px] text-ory-muted">
                 <li className="flex items-center gap-2">
                   <span className="text-ory-accent">✓</span> Curated archive &amp; early private pour access
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="text-ory-accent">✓</span> Complimentary custom 2ml scent vials with every order
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-ory-accent">✓</span> Invitations to seasonal fragrance dinners in Grasse &amp; London
                 </li>
               </ul>
             </div>

@@ -1,3 +1,4 @@
+import { ClerkProvider } from '@clerk/nextjs'
 import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Sans, EB_Garamond } from "next/font/google";
 import { Header } from "@/components/layout/Header";
@@ -37,19 +38,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${dmSans.variable} ${ebGaramond.variable} ${cormorant.variable} h-full antialiased`}
-    >
-      <body className="flex min-h-full flex-col bg-ory-cream font-sans text-ory-body">
-        <CartProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <BagDrawer />
-          <AuthModal />
-        </CartProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html
+        lang="en"
+        className={`${dmSans.variable} ${ebGaramond.variable} ${cormorant.variable} h-full antialiased`}
+      >
+        <body className="flex min-h-full flex-col bg-ory-cream font-sans text-ory-body">
+          <CartProvider>
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <BagDrawer />
+            <AuthModal />
+          </CartProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

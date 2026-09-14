@@ -13,6 +13,7 @@
     "seed": "npm run seed --prefix studio"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.9.2",
     "@sanity/image-url": "^2.1.1",
     "crypto-js": "^4.2.0",
     "next": "16.3.5",

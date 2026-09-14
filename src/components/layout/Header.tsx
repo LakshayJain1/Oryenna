@@ -4,6 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { UserButton } from "@clerk/nextjs";
+import { ClerkAccountTrigger } from "@/components/auth/ClerkAccountTrigger";
 
 const navLinks = [
   { name: "Collection", href: "#shop" },
@@ -49,22 +51,10 @@ export function Header() {
           {/* Right: Actions (Account, Bag, Mobile Toggle) */}
           <div className="flex items-center gap-4 sm:gap-6">
             {/* Account trigger */}
-            <button
-              type="button"
-              onClick={() => setIsAuthOpen(true)}
-              className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] text-ory-body transition-colors hover:text-ory-ink"
-            >
-              <span className="hidden sm:inline">Account</span>
-              <div className="flex size-7 items-center justify-center rounded-full border border-ory-divider/60 bg-ory-cream hover:border-ory-ink">
-                <Image
-                  src="/icons/user.svg"
-                  alt="User profile"
-                  width={11}
-                  height={11}
-                  className="opacity-70"
-                />
-              </div>
-            </button>
+            <div className="flex items-center gap-2">
+              <UserButton />
+              <ClerkAccountTrigger onOpenAuth={() => setIsAuthOpen(true)} />
+            </div>
 
             {/* Bag trigger */}
             <button
