@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  --ory-cream: #fbf9f1;
+  --ory-cream-deep: #f6f4ec;
+  --ory-surface: #f0eee6;
+  --ory-ink: #34251a;
+  --ory-body: #4e453f;
+  --ory-muted: #80756e;
+  --ory-accent: #5d6141;
+  --ory-divider: #d2c4bc;
+  --ory-header: rgba(251, 249, 241, 0.9);
+}
+
+@theme inline {
+  --color-ory-cream: var(--ory-cream);
+  --color-ory-cream-deep: var(--ory-cream-deep);
+  --color-ory-surface: var(--ory-surface);
+  --color-ory-ink: var(--ory-ink);
+  --color-ory-body: var(--ory-body);
+  --color-ory-muted: var(--ory-muted);
+  --color-ory-accent: var(--ory-accent);
+  --color-ory-divider: var(--ory-divider);
+  --font-serif: var(--font-eb-garamond);
+  --font-display: var(--font-cormorant);
+  --font-sans: var(--font-dm-sans);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--ory-cream);
+  color: var(--ory-body);
+  font-family: var(--font-dm-sans), sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Elegant minimalist scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ory-cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ory-divider);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ory-muted);
+}
