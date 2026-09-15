@@ -2,7 +2,7 @@ import { defineField, defineType } from 'sanity'
 
 export const product = defineType({
   name: 'product',
-  title: 'Products (Fragrance & Pours)',
+  title: 'Product',
   type: 'document',
   fields: [
     defineField({
@@ -19,10 +19,15 @@ export const product = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'priceINR',
-      title: 'Base Price (INR ₹)',
+      name: 'price',
+      title: 'Price (USD $)',
       type: 'number',
-      description: 'Base pricing in Indian Rupees (₹). Automatically converted for international visitors ($ USD, € EUR, £ GBP, etc.).',
+      validation: (Rule) => Rule.required().positive(),
+    }),
+    defineField({
+      name: 'priceINR',
+      title: 'Price (INR ₹)',
+      type: 'number',
       validation: (Rule) => Rule.required().positive(),
     }),
     defineField({
@@ -35,7 +40,6 @@ export const product = defineType({
       name: 'notes',
       title: 'Primary Olfactory Notes Summary',
       type: 'string',
-      description: 'e.g. Warm Woods · Amber · Smoke',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -43,6 +47,12 @@ export const product = defineType({
       title: 'Short Description',
       type: 'text',
       rows: 3,
+    }),
+    defineField({
+      name: 'longDescription',
+      title: 'Long Description',
+      type: 'array',
+      of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], lists: [] }],
     }),
     defineField({
       name: 'weight',
@@ -57,6 +67,30 @@ export const product = defineType({
       initialValue: '55 Hours',
     }),
     defineField({
+      name: 'accentNotes',
+      title: 'Accent Notes',
+      type: 'array',
+      of: [{ type: 'string' }],
+    }),
+    defineField({
+      name: 'topNotes',
+      title: 'Olfactory Pyramid — Top Notes',
+      type: 'string',
+      description: 'e.g. Bergamot, Pink Peppercorn, Wild Mint',
+    }),
+    defineField({
+      name: 'heartNotes',
+      title: 'Olfactory Pyramid — Heart Notes',
+      type: 'string',
+      description: 'e.g. Labdanum, Damask Rose, Orris Root',
+    }),
+    defineField({
+      name: 'baseNotes',
+      title: 'Olfactory Pyramid — Base Notes',
+      type: 'string',
+      description: 'e.g. Smoked Cedar, White Amber, Benzoin Resin',
+    }),
+    defineField({
       name: 'image',
       title: 'Primary Vessel Image',
       type: 'image',
@@ -68,10 +102,38 @@ export const product = defineType({
     }),
     defineField({
       name: 'insiderInfo',
-      title: 'Product Insider Information (Deep Dive)',
+      title: 'Insider Information',
       type: 'reference',
       to: [{ type: 'productInsider' }],
       description: 'Link to detailed product craftsmanship, provenance, and olfactory pyramid.',
     }),
+    defineField({
+      name: 'inStock',
+      title: 'In Stock',
+      type: 'boolean',
+      initialValue: true,
+    }),
+    defineField({
+      name: 'orderRank',
+      title: 'Display Order',
+      type: 'number',
+      initialValue: 1,
+    }),
+    defineField({
+      name: 'collection',
+      title: 'Collection',
+      type: 'reference',
+      to: [{ type: 'collection' }],
+    }),
   ],
+  preview: {
+    select: {
+      title: 'name',
+    },
+    prepare({ title }) {
+      return {
+        title: title || 'Product',
+      }
+    },
+  },
 })

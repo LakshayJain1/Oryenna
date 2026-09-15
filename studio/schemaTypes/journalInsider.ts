@@ -35,7 +35,7 @@ export const journalInsider = defineType({
           title: 'Chapter',
           fields: [
             defineField({ name: 'chapterHeading', title: 'Chapter Heading', type: 'string' }),
-            defineField({ name: 'chapterText', title: 'Chapter Paragraphs', type: 'text', rows: 6 }),
+            defineField({ name: 'chapterText', title: 'Chapter Paragraphs', type: 'array', of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], lists: [] }] }),
             defineField({
               name: 'chapterImage',
               title: 'Chapter Illustration Image',
@@ -50,7 +50,6 @@ export const journalInsider = defineType({
       name: 'curatorNote',
       title: 'Curator Closing Note',
       type: 'text',
-      rows: 3,
     }),
   ],
 })

@@ -23,25 +23,21 @@ export const productInsider = defineType({
       title: 'Provenance & Atelier Craft Story',
       type: 'text',
       rows: 5,
-      description: 'Detailed background on where the raw botanicals are harvested in Grasse or Provence.',
     }),
     defineField({
       name: 'topNotes',
       title: 'Olfactory Pyramid — Top Notes',
       type: 'string',
-      description: 'e.g. Bergamot, Pink Peppercorn, Wild Mint',
     }),
     defineField({
       name: 'heartNotes',
       title: 'Olfactory Pyramid — Heart Notes',
       type: 'string',
-      description: 'e.g. Labdanum, Damask Rose, Orris Root',
     }),
     defineField({
       name: 'baseNotes',
       title: 'Olfactory Pyramid — Base Notes',
       type: 'string',
-      description: 'e.g. Smoked Cedar, White Amber, Benzoin Resin',
     }),
     defineField({
       name: 'ingredientsList',

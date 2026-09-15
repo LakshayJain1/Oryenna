@@ -16,13 +16,11 @@ export const footer = defineType({
       title: 'Brand Footer Tagline',
       type: 'text',
       rows: 2,
-      initialValue: 'Scents and spaces designed for slower moments. Hand-poured in Grasse and Provence.',
     }),
     defineField({
       name: 'copyrightText',
       title: 'Copyright Text',
       type: 'string',
-      initialValue: '© 2026 Oryenna Atelier de Parfum. All Rights Reserved.',
     }),
     defineField({
       name: 'footerColumns',

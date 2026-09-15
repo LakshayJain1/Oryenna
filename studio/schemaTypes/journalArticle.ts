@@ -2,7 +2,7 @@ import { defineField, defineType } from 'sanity'
 
 export const journalArticle = defineType({
   name: 'journalArticle',
-  title: 'Journal Articles',
+  title: 'Journal Article',
   type: 'document',
   fields: [
     defineField({
@@ -49,11 +49,38 @@ export const journalArticle = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'content',
+      title: 'Full Article Content',
+      type: 'array',
+      of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], lists: [] }],
+    }),
+    defineField({
+      name: 'author',
+      title: 'Author / Curator',
+      type: 'string',
+      initialValue: 'Atelier Curators, Grasse',
+    }),
+    defineField({
       name: 'insiderArticle',
-      title: 'Journal Insider Article (Full Story & Chapters)',
+      title: 'Journal Insider Article (Deep Dive)',
       type: 'reference',
       to: [{ type: 'journalInsider' }],
-      description: 'Link to the comprehensive long-form essay and photography chapters.',
+    }),
+    defineField({
+      name: 'orderRank',
+      title: 'Display Order',
+      type: 'number',
+      initialValue: 1,
     }),
   ],
+  preview: {
+    select: {
+      title: 'title',
+    },
+    prepare({ title }) {
+      return {
+        title: title || 'Journal Article',
+      }
+    },
+  },
 })

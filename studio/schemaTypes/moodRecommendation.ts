@@ -23,14 +23,12 @@ export const moodRecommendation = defineType({
       name: 'label',
       title: 'Prescribed Atmosphere Label',
       type: 'string',
-      description: 'e.g. Quiet & Contemplative',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'tagline',
       title: 'Tagline',
       type: 'string',
-      description: 'e.g. Serene Linen & Whispering Woods',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -51,7 +49,6 @@ export const moodRecommendation = defineType({
       name: 'bestFor',
       title: 'Ideal Sanctuary Setting',
       type: 'string',
-      description: 'e.g. Rainy afternoons, mindful reading, bedside wind-down',
     }),
     defineField({
       name: 'warmth',
@@ -78,17 +75,4 @@ export const moodRecommendation = defineType({
       initialValue: 1,
     }),
   ],
-  preview: {
-    select: {
-      title: 'label',
-      subtitle: 'tagline',
-      productName: 'product.name',
-    },
-    prepare({ title, subtitle, productName }) {
-      return {
-        title,
-        subtitle: `${subtitle || ''} → ${productName || 'No candle linked'}`,
-      }
-    },
-  },
 })
