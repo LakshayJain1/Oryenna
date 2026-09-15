@@ -1,28 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { UserButton } from "@clerk/nextjs";
 import { ClerkAccountTrigger } from "@/components/auth/ClerkAccountTrigger";
-
-const navLinks = [
-  { name: "Collection", href: "#shop" },
-  { name: "Ritual", href: "#ritual" },
-  { name: "Sanctuary", href: "#about" },
-  { name: "Journal", href: "#journal" },
-];
+import { groq } from "next-sanity";
+import { client } from "@/sanity/client";
+import { NAVBAR_QUERY } from "@/sanity/queries_footer_navbar";
 
 export function Header() {
-  const { totalItemsCount, setIsBagOpen, setIsAuthOpen } = useCart();
+  const [navLinks, setNavLinks] = useState<Array<{ label: string; url: string }>>([]);
+  const [announcementText, setAnnouncementText] = useState<string>("");
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { totalItemsCount } = useCart();
+
+  useEffect(() => {
+    // Fetch navbar data from Sanity on client mount
+    client.fetch(NAVBAR_QUERY).then((data: any) => {
+      if (data && data.navLinks) {
+        setNavLinks(data.navLinks);
+      }
+      if (data && data.announcementText) {
+        setAnnouncementText(data.announcementText);
+      }
+    });
+  }, []);
 
   return (
     <header className="sticky top-0 z-40">
-      {/* Top Announcement Bar matching Figma */}
+      {/* Top Announcement Bar - dynamically loaded from Sanity */}
       <div className="bg-ory-ink px-4 py-2 text-center text-[10px] uppercase tracking-[0.24em] text-ory-cream/90 transition-all">
-        Complimentary White-Glove Shipping on Orders Over $150 · Hand-Poured in Provence
+        {announcementText || "Complimentary White-Glove Shipping on Orders Over $150 · Hand-Poured in Provence"}
       </div>
 
       {/* Main Navigation Bar */}
@@ -35,15 +46,15 @@ export function Header() {
             </span>
           </Link>
 
-          {/* Center: Desktop Navigation Links */}
+{/* Center: Desktop Navigation Links - from Sanity */}
           <nav className="hidden items-center gap-8 md:flex" aria-label="Main Navigation">
             {navLinks.map((link) => (
               <Link
-                key={link.name}
-                href={link.href}
+                key={link.label}
+                href={link.url}
                 className="py-1 text-[11px] uppercase tracking-[0.2em] text-ory-body transition-colors hover:text-ory-ink font-medium"
               >
-                {link.name}
+                {link.label}
               </Link>
             ))}
           </nav>
@@ -51,15 +62,30 @@ export function Header() {
           {/* Right: Actions (Account, Bag, Mobile Toggle) */}
           <div className="flex items-center gap-4 sm:gap-6">
             {/* Account trigger */}
-            <div className="flex items-center gap-2">
-              <UserButton />
-              <ClerkAccountTrigger onOpenAuth={() => setIsAuthOpen(true)} />
-            </div>
+            <ClerkAccountTrigger onOpenAuth={() => setIsAuthOpen(true)} />
 
             {/* Bag trigger */}
             <button
               type="button"
-              onClick={() => setIsBagOpen(true)}
+              onClick={() => setIsAuthOpen(true)}  // Could open modal or show user menu
+              className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] text-ory-body transition-colors hover:text-ory-ink"
+            >
+              <span className="hidden sm:inline">Account</span>
+              <div className="flex size-7 items-center justify-center rounded-full border border-ory-divider/60 bg-ory-cream hover:border-ory-ink">
+                <Image
+                  src="/icons/user.svg"
+                  alt="User profile"
+                  width={11}
+                  height={11}
+                  className="opacity-70"
+                />
+              </div>
+            </button>
+
+            {/* Bag trigger */}
+            <button
+              type="button"
+              onClick={() => setIsAuthOpen(true)}
               className="flex items-center gap-2 border border-ory-divider/50 bg-ory-cream-deep/60 px-3.5 py-1.5 text-[11px] uppercase tracking-[0.18em] text-ory-ink transition-all hover:border-ory-ink hover:bg-ory-cream active:scale-[0.97]"
               aria-label={`Shopping bag containing ${totalItemsCount} items`}
             >
@@ -87,12 +113,12 @@ export function Header() {
             <nav className="flex flex-col space-y-4">
               {navLinks.map((link) => (
                 <Link
-                  key={link.name}
-                  href={link.href}
+                  key={link.label}
+                  href={link.url}
                   onClick={() => setMobileMenuOpen(false)}
                   className="text-[13px] uppercase tracking-[0.18em] text-ory-ink font-medium"
                 >
-                  {link.name}
+                  {link.label}
                 </Link>
               ))}
               <button
