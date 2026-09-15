@@ -2,12 +2,12 @@ import { defineField, defineType } from 'sanity'
 
 export const journalArticle = defineType({
   name: 'journalArticle',
-  title: 'Journal Essays',
+  title: 'Journal Articles',
   type: 'document',
   fields: [
     defineField({
       name: 'title',
-      title: 'Title',
+      title: 'Article Title',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
@@ -15,68 +15,45 @@ export const journalArticle = defineType({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: {
-        source: 'title',
-        maxLength: 96,
-      },
+      options: { source: 'title', maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'category',
-      title: 'Category',
+      title: 'Category / Tag',
       type: 'string',
-      description: 'e.g. RITUAL, TERROIR, SPACES, CRAFT',
-      validation: (Rule) => Rule.required(),
+      description: 'e.g. OLFACTORY STUDY, PROVENCE RITUALS, ARCHIVE',
     }),
     defineField({
       name: 'readTime',
-      title: 'Read Time',
+      title: 'Estimated Read Time',
       type: 'string',
-      description: 'e.g. 4 MIN READ',
+      initialValue: '4 MIN READ',
     }),
     defineField({
       name: 'publishedAt',
       title: 'Published Date',
       type: 'date',
-      options: {
-        dateFormat: 'MMMM DD',
-      },
     }),
     defineField({
-      name: 'excerpt',
-      title: 'Excerpt',
+      name: 'summary',
+      title: 'Summary / Excerpt',
       type: 'text',
       rows: 3,
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'image',
-      title: 'Article Image',
+      name: 'coverImage',
+      title: 'Cover Image',
       type: 'image',
-      options: {
-        hotspot: true,
-      },
-      fields: [
-        defineField({
-          name: 'alt',
-          title: 'Alternative Text',
-          type: 'string',
-        }),
-      ],
+      options: { hotspot: true },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'body',
-      title: 'Essay Body',
-      type: 'array',
-      of: [{ type: 'block' }],
+      name: 'insiderArticle',
+      title: 'Journal Insider Article (Full Story & Chapters)',
+      type: 'reference',
+      to: [{ type: 'journalInsider' }],
+      description: 'Link to the comprehensive long-form essay and photography chapters.',
     }),
   ],
-  preview: {
-    select: {
-      title: 'title',
-      subtitle: 'category',
-      media: 'image',
-    },
-  },
 })

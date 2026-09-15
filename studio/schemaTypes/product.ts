@@ -2,12 +2,12 @@ import { defineField, defineType } from 'sanity'
 
 export const product = defineType({
   name: 'product',
-  title: 'Fragrance Products',
+  title: 'Products (Fragrance & Pours)',
   type: 'document',
   fields: [
     defineField({
       name: 'name',
-      title: 'Name',
+      title: 'Product Name',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
@@ -15,16 +15,14 @@ export const product = defineType({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: {
-        source: 'name',
-        maxLength: 96,
-      },
+      options: { source: 'name', maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'price',
-      title: 'Price (USD)',
+      name: 'priceINR',
+      title: 'Base Price (INR ₹)',
       type: 'number',
+      description: 'Base pricing in Indian Rupees (₹). Automatically converted for international visitors ($ USD, € EUR, £ GBP, etc.).',
       validation: (Rule) => Rule.required().positive(),
     }),
     defineField({
@@ -35,7 +33,7 @@ export const product = defineType({
     }),
     defineField({
       name: 'notes',
-      title: 'Primary Olfactory Notes',
+      title: 'Primary Olfactory Notes Summary',
       type: 'string',
       description: 'e.g. Warm Woods · Amber · Smoke',
       validation: (Rule) => Rule.required(),
@@ -45,84 +43,35 @@ export const product = defineType({
       title: 'Short Description',
       type: 'text',
       rows: 3,
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'weight',
-      title: 'Vessel Weight',
+      title: 'Vessel Weight / Size',
       type: 'string',
       initialValue: '290G / 10.2 OZ',
     }),
     defineField({
       name: 'burnTime',
-      title: 'Burn Time',
+      title: 'Burn Time / Longevity',
       type: 'string',
       initialValue: '55 Hours',
     }),
     defineField({
       name: 'image',
-      title: 'Vessel Image',
+      title: 'Primary Vessel Image',
       type: 'image',
-      options: {
-        hotspot: true,
-      },
+      options: { hotspot: true },
       fields: [
-        defineField({
-          name: 'alt',
-          title: 'Alternative Text',
-          type: 'string',
-        }),
+        defineField({ name: 'alt', title: 'Alternative Text', type: 'string' }),
       ],
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'accentNotes',
-      title: 'Accent Notes',
-      type: 'array',
-      of: [{ type: 'string' }],
-    }),
-    defineField({
-      name: 'topNotes',
-      title: 'Olfactory Pyramid — Top Notes',
-      type: 'string',
-      description: 'e.g. Bergamot & Pink Pepper',
-    }),
-    defineField({
-      name: 'heartNotes',
-      title: 'Olfactory Pyramid — Heart Notes',
-      type: 'string',
-      description: 'e.g. Amber & Labdanum',
-    }),
-    defineField({
-      name: 'baseNotes',
-      title: 'Olfactory Pyramid — Base Notes',
-      type: 'string',
-      description: 'e.g. Smoked Cedar & Benzoin',
-    }),
-    defineField({
-      name: 'story',
-      title: 'Atelier Scent Story',
-      type: 'text',
-      rows: 4,
-    }),
-    defineField({
-      name: 'inStock',
-      title: 'In Stock',
-      type: 'boolean',
-      initialValue: true,
-    }),
-    defineField({
-      name: 'orderRank',
-      title: 'Display Order Rank',
-      type: 'number',
-      initialValue: 1,
+      name: 'insiderInfo',
+      title: 'Product Insider Information (Deep Dive)',
+      type: 'reference',
+      to: [{ type: 'productInsider' }],
+      description: 'Link to detailed product craftsmanship, provenance, and olfactory pyramid.',
     }),
   ],
-  preview: {
-    select: {
-      title: 'name',
-      subtitle: 'notes',
-      media: 'image',
-    },
-  },
 })
