@@ -288,8 +288,17 @@ function renderEditorialSection(section: SectionBlock) {
             )}
           </div>
           <div className="lg:col-span-6">
-            {text && (
+            {text && typeof text === "string" && (
               <p className="mt-4 text-[16px] text-ory-body/80">{text}</p>
+            )}
+            {text && typeof text !== "string" && (
+              <div className="mt-4 space-y-4">
+                {text.map((block: any, idx: number) => (
+                  <p key={idx} className="text-[16px] text-ory-body/80">
+                    {block.children?.map((c: any) => c.text).join(" ")}
+                  </p>
+                ))}
+              </div>
             )}
             {ctaText && ctaUrl && (
               <div className="mt-4">
