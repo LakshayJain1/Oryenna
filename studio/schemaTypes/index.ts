@@ -5,7 +5,8 @@ import { journalArticle } from './journalArticle'
 import { journalInsider } from './journalInsider'
 import { navbar } from './navbar'
 import { footer } from './footer'
-import { pageContent } from './pageContent'
+import { homePage } from './homePage'
+import { blogPage } from './blogPage'
 import { complimentarySample } from './complimentarySample'
 import { moodRecommendation } from './moodRecommendation'
 import { siteSettings } from './siteSettings'
@@ -13,11 +14,12 @@ import { siteSettings } from './siteSettings'
 export const schemaTypes = [
   navbar,
   footer,
+  homePage,
+  blogPage,
   product,
   productInsider,
   journalArticle,
   journalInsider,
-  pageContent,
   complimentarySample,
   moodRecommendation,
   siteSettings,

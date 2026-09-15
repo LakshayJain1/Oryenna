@@ -1,4 +1,4 @@
-import { defineField, defineType } from 'sanity'
+import {defineField, defineType} from 'sanity'
 
 export const pageContent = defineType({
   name: 'pageContent',
@@ -7,26 +7,25 @@ export const pageContent = defineType({
   fields: [
     defineField({
       name: 'pageTitle',
-      title: 'Page Identifier',
+      title: 'Page Identifier (e.g. Homepage, Journal, Sanctuary)',
       type: 'string',
-      description: 'e.g. Homepage, Checkout, Scent Finder',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'slug',
-      title: 'Page Slug',
+      title: 'Slug',
       type: 'slug',
       options: { source: 'pageTitle', maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'heroHeading',
-      title: 'Hero / Section Heading',
+      title: 'Hero Heading',
       type: 'string',
     }),
     defineField({
       name: 'heroSubheading',
-      title: 'Hero Subheading / Eyebrow',
+      title: 'Hero Subheading',
       type: 'string',
     }),
     defineField({
@@ -34,28 +33,6 @@ export const pageContent = defineType({
       title: 'Hero Description',
       type: 'text',
       rows: 3,
-    }),
-    defineField({
-      name: 'heroImage',
-      title: 'Hero Banner Image',
-      type: 'image',
-      options: { hotspot: true },
-    }),
-    defineField({
-      name: 'customSections',
-      title: 'Custom Page Modules / Sections',
-      type: 'array',
-      of: [
-        {
-          type: 'object',
-          fields: [
-            defineField({ name: 'sectionTitle', title: 'Section Title', type: 'string' }),
-            defineField({ name: 'sectionSubtitle', title: 'Section Subtitle', type: 'string' }),
-            defineField({ name: 'bodyText', title: 'Body Text', type: 'text', rows: 4 }),
-            defineField({ name: 'sectionImage', title: 'Section Image', type: 'image', options: { hotspot: true } }),
-          ],
-        },
-      ],
     }),
   ],
 })
