@@ -1,108 +1,140 @@
 "use client";
 
-import { useExpect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { urlForImage } from "@/sanity/image";
+import type { SectionBlock } from "@/sanity/types";
 
-type SectionBlock = {
-  sectionType: string;
-  orderRank: number;
-  // We'll spread section-specific data via ...any
-  [key: string]: any;
-};
+function getImageUrl(image: any): string | null {
+  if (!image) return null;
 
-/**
- * Renders a section block dynamically based on sectionType.
- * Each sectionType has its own rendering logic.
- */
-export function SectionRenderer({ section }: { section: SectionBlock }) {
-  const { sectionType } = section;
+  if (image.asset && typeof image.asset.url === "string") {
+    return image.asset.url;
+  }
+
+  if (image.asset && image.asset._ref) {
+    const builder = urlForImage(image);
+    if (builder) {
+      try {
+        return builder.auto("format").fit("max").url();
+      } catch {
+        return null;
+      }
+    }
+  }
+
+  if (typeof image.url === "string") {
+    return image.url;
+  }
+
+  return null;
+}
+
+function getSectionType(section: SectionBlock): string {
+  return section._type || section.sectionType || "unknown";
+}
+
+export function SectionRenderer({ sections }: { sections: SectionBlock[] }) {
+  if (!sections || sections.length === 0) return null;
+
+  return (
+    <>
+      {sections.map((section, idx) => (
+        <SectionRendererOne key={idx} section={section} />
+      ))}
+    </>
+  );
+}
+
+function SectionRendererOne({ section }: { section: SectionBlock }) {
+  const sectionType = getSectionType(section);
 
   switch (sectionType) {
-    case "heroSection": {
+    case "heroSection":
       return renderHeroSection(section);
-    }
-    case "productGrid": {
+    case "productGrid":
       return renderProductGridSection(section);
-    }
-    case "collectionGrid": {
+    case "collectionGrid":
       return renderCollectionGridSection(section);
-    }
-    case "imageText": {
+    case "imageText":
       return renderImageTextSection(section);
-    }
-    case "editorialSection": {
+    case "editorialSection":
       return renderEditorialSection(section);
-    }
-    case "testimonialSection": {
+    case "testimonialSection":
       return renderTestimonialSection(section);
-    }
-    case "newsletterSection": {
+    case "newsletterSection":
       return renderNewsletterSection(section);
-    }
-    case "faqSection": {
+    case "faqSection":
       return renderFaqSection(section);
-    }
-    case "richTextSection": {
+    case "richTextSection":
       return renderRichTextSection(section);
-    }
-    case "ctaSection": {
+    case "ctaSection":
       return renderCTASection(section);
-    }
     default:
-      return <div className="border border-ory-divider/40 bg-ory-cream p-8">Unknown Section Type: {sectionType}</div>;
+      return (
+        <div className="border border-ory-divider/40 bg-ory-cream p-8">
+          Unknown Section Type: {sectionType}
+        </div>
+      );
   }
 }
 
-function renderHeroSection(section: any) {
+function renderHeroSection(section: SectionBlock) {
   const { title, subtitle, eyebrow, ctaText, ctaUrl, image, backgroundColor, textColor } = section;
 
   if (!title) return null;
 
-  const imageUrl = image?.asset?.url ? urlForImage(image).auto('format').fit('max').url() : null;
+  const imageUrl = getImageUrl(image);
 
   return (
-    <section className={`border-t border-ory-divider/40 bg-ory-cream-deep px-6 py-20 md:px-16 lg:py-28 ${backgroundColor || 'ory-cream-deep'} ${textColor || 'ory-ink'}`}>
+    <section className={`border-t border-ory-divider/40 bg-ory-cream-deep px-6 py-20 md:px-16 lg:py-28 ${backgroundColor || "ory-cream-deep"} ${textColor || "ory-ink"}`}>
       <div className="mx-auto max-w-[1152px]">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-6">
-            <h2 className="font-serif text-[34px] uppercase leading-tight tracking-[0.08em] text-ory-ink sm:text-[44px]">
+            {eyebrow && (
+              <p className="text-[11px] uppercase tracking-[0.2em] text-ory-accent font-medium">{eyebrow}</p>
+            )}
+            <h2 className="mt-3 font-serif text-[34px] uppercase leading-tight tracking-[0.08em] text-ory-ink sm:text-[44px]">
               {title}
             </h2>
-            {subtitle && <p className="mt-3 text-[20px] text-ory-body/80 sm:text-[23px]">{subtitle}</p>}
-            {eyebrow && <p className="mt-2 text-[10px] uppercase tracking-[0.24em] text-ory-accent font-medium">{eyebrow}</p>}
+            {subtitle && (
+              <p className="mt-4 max-w-xl text-[16px] leading-relaxed text-ory-body">{subtitle}</p>
+            )}
             {ctaText && ctaUrl && (
-              <div className="mt-6">
-                <Link href={ctaUrl} className="border border-ory-ink bg-ory-ink text-[11px] font-medium uppercase tracking-[0.2em] text-white px-6 py-3 transition-all hover:bg-ory-ink/90 active:scale-[0.98]">
-                  {ctaText}
-                </Link>
+              <Link
+                href={ctaUrl}
+                className="mt-8 inline-block border border-ory-ink bg-ory-ink px-8 py-4 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-all hover:bg-ory-ink/90 active:scale-[0.98]"
+              >
+                {ctaText}
+              </Link>
+            )}
+          </div>
+          {imageUrl && (
+            <div className="lg:col-span-6">
+              <div className="relative h-[320px] w-full overflow-hidden bg-ory-surface/40 sm:h-[440px]">
+                <Image
+                  src={imageUrl}
+                  alt={image.alt || title}
+                  fill
+                  className="object-cover object-center filter saturate-[0.85] contrast-[0.95]"
+                  sizes="(max-width: 1024px) 100vw, 560px"
+                />
               </div>
-            )}
-          </div>
-          <div className="lg:col-span-6 relative">
-            {image && (
-              <Image
-                src={imageUrl}
-                alt={image.alt || title}
-                fill
-                className="object-cover object-center filter saturate-[0.85] contrast-[0.95]"
-                sizes="100vw"
-              />
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </section>
   );
 }
 
-function renderProductGridSection(section: any) {
-  const { title, subtitle, productFilter, columns, showVendor, showBadge } = section;
+function renderProductGridSection(section: SectionBlock) {
+  const { title, subtitle, colCount, showVendor } = section;
 
   if (!title && !subtitle) return null;
 
-  const colCount = parseInt(columns) || 4;
+  const cols = Number(colCount) || 4;
+  const gridClass = lrgint(cols);
 
   return (
     <section className="border-t border-ory-divider/40 bg-ory-cream-deep px-6 py-20 md:px-16 lg:py-28">
@@ -111,32 +143,39 @@ function renderProductGridSection(section: any) {
           {title && (
             <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
               <div>
+                <p className="text-[11px] uppercase tracking-[0.2em] text-ory-accent font-medium">Shop the Collection</p>
                 <h2 className="mt-2 font-serif text-[34px] uppercase leading-tight tracking-[0.08em] text-ory-ink sm:text-[44px]">
                   {title}
                 </h2>
                 {subtitle && <p className="mt-2 max-w-xl text-[14px] leading-relaxed text-ory-body">{subtitle}</p>}
               </div>
-              {showVendor && <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-ory-body font-medium">Archive Vol. 04</div>}
+              {showVendor && (
+                <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-ory-body font-medium">
+                  Archive Vol. 04
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols{lrgint(colCount)} gap-6">
-          {/* Products would be fetched by the parent page using the productFilter */}
-          {/* This section expects products to be available in context or via a separate query */}
-          <p className="text-ory-muted text-sm">Product grid section - configure product filter and see products above</p>
+        <div className={`mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:${gridClass}`}>
+          <p className="text-ory-muted text-sm">
+            Product grid section - connect a product query to render products here.
+          </p>
         </div>
       </div>
     </section>
   );
 }
 
-function renderCollectionGridSection(section: any) {
-  const { title, subtitle, collection, columns, showImage } = section;
+function renderCollectionGridSection(section: SectionBlock) {
+  const { title, subtitle, collection, colCount } = section;
 
-  if (!title) return null;
+  if (!title && !collection) return null;
 
-  const colCount = parseInt(columns) || 4;
+  const cols = Number(colCount) || 4;
+  const gridClass = lrgint(cols);
+  const products = collection?.products || [];
 
   return (
     <section className="border-t border-ory-divider/40 bg-ory-cream-deep px-6 py-20 md:px-16 lg:py-28">
@@ -152,20 +191,27 @@ function renderCollectionGridSection(section: any) {
               </div>
               {collection && (
                 <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-ory-body font-medium">
-                  {/* Collection info would render here */}
+                  {collection.name}
                 </div>
               )}
             </div>
           )}
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols{lrgint(colCount)} gap-6">
-          {collection && collection.products && collection.products.length > 0 ? (
-            collection.products.map((product: any) => (
-              <div key={product._id} className="border border-ory-divider/40 bg-ory-cream p-4 hover:border-ory-divider transition-colors">
+        <div className={`mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:${gridClass}`}>
+          {products.length > 0 ? (
+            products.map((product: any) => (
+              <div
+                key={product._id}
+                className="border border-ory-divider/40 bg-ory-cream p-4 transition-colors hover:border-ory-divider"
+              >
                 <h3 className="font-serif text-[20px] text-ory-ink">{product.name}</h3>
                 <p className="mt-1 text-ory-body">${product.price}</p>
-                {product.notes && <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-ory-accent font-medium">{product.notes}</p>)}
+                {product.notes && (
+                  <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-ory-accent font-medium">
+                    {product.notes}
+                  </p>
+                )}
               </div>
             ))
           ) : (
@@ -177,45 +223,48 @@ function renderCollectionGridSection(section: any) {
   );
 }
 
-function renderImageTextSection(section: any) {
+function renderImageTextSection(section: SectionBlock) {
   const { title, subtitle, image, text, imageAlignment, textAlignment } = section;
 
   if (!title && !image) return null;
 
-  const imageUrl = image?.asset?.url ? urlForImage(image).auto('format').fit('max').url() : null;
+  const imageUrl = getImageUrl(image);
+  const imageLeft = imageAlignment === "left";
 
   return (
     <section className="border-t border-ory-divider/40 bg-ory-cream-deep px-6 py-20 md:px-16 lg:py-28">
       <div className="mx-auto max-w-[1152px]">
-        <div className="relative flex flex-col lg:flex-row gap-12 md:gap-16 items-center">
-          <div className="lg:col-span-6">
-            {image && (
-              <Image
-                src={imageUrl}
-                alt={image.alt || title}
-                fill
-                className="object-cover object-center filter saturate-[0.85] contrast-[0.95]"
-                sizes="100vw"
-              />
-            )}
-          </div>
-          <div className="lg:col-span-6">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
+          <div className={`lg:col-span-6 ${imageLeft ? "lg:order-1" : "lg:order-2"}`}>
             {title && <h2 className="font-serif text-[34px] uppercase leading-tight tracking-[0.08em] text-ory-ink sm:text-[44px]">{title}</h2>}
             {subtitle && <p className="mt-3 text-[20px] text-ory-body/80 sm:text-[23px]">{subtitle}</p>}
-            {text && <p className="mt-4 text-[16px] text-ory-body/80 line-clamp-3">{text}</p>}
+            {text && <p className="mt-4 text-[16px] text-ory-body/80">{text}</p>}
           </div>
+          {imageUrl && (
+            <div className={`lg:col-span-6 ${imageLeft ? "lg:order-2" : "lg:order-1"}`}>
+              <div className="relative h-[320px] w-full overflow-hidden bg-ory-surface/40 sm:h-[440px]">
+                <Image
+                  src={imageUrl}
+                  alt={image.alt || title}
+                  fill
+                  className="object-cover object-center filter saturate-[0.85] contrast-[0.95]"
+                  sizes="(max-width: 1024px) 100vw, 560px"
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>
   );
 }
 
-function renderEditorialSection(section: any) {
+function renderEditorialSection(section: SectionBlock) {
   const { title, subtitle, image, text, ctaText, ctaUrl } = section;
 
   if (!title) return null;
 
-  const imageUrl = image?.asset?.url ? urlForImage(image).auto('format').fit('max').url() : null;
+  const imageUrl = getImageUrl(image);
 
   return (
     <section className="border-t border-ory-divider/40 bg-ory-cream-deep px-6 py-20 md:px-16 lg:py-28">
@@ -226,28 +275,31 @@ function renderEditorialSection(section: any) {
               {title}
             </h2>
             {subtitle && <p className="mt-3 text-[20px] text-ory-body/80 sm:text-[23px]">{subtitle}</p>}
-            {image && (
-              <Image
-                src={imageUrl}
-                alt={image.alt || title}
-                fill
-                className="object-cover object-center mt-6 md:mt-0 sm:h-[400px] lg:h-[500px]"
-                sizes="(max-width: 1024px) 100vw, 560px"
-              />
+            {imageUrl && (
+              <div className="relative mt-6 h-[320px] w-full overflow-hidden bg-ory-surface/40 sm:h-[440px]">
+                <Image
+                  src={imageUrl}
+                  alt={image.alt || title}
+                  fill
+                  className="object-cover object-center"
+                  sizes="(max-width: 1024px) 100vw, 560px"
+                />
+              </div>
             )}
           </div>
           <div className="lg:col-span-6">
+            {text && (
+              <p className="mt-4 text-[16px] text-ory-body/80">{text}</p>
+            )}
             {ctaText && ctaUrl && (
               <div className="mt-4">
-                <Link href={ctaUrl} className="border border-ory-ink bg-ory-ink text-[11px] font-medium uppercase tracking-[0.2em] text-white px-6 py-3 transition-all hover:bg-ory-ink/90 active:scale-[0.98]">
+                <Link
+                  href={ctaUrl}
+                  className="border border-ory-ink bg-ory-ink text-[11px] font-medium uppercase tracking-[0.2em] text-white px-6 py-3 transition-all hover:bg-ory-ink/90 active:scale-[0.98]"
+                >
                   {ctaText}
                 </Link>
               </div>
-            )}
-            {text && (
-              <p className="mt-4 text-[16px] text-ory-body/80 line-clamp-4">
-                {text}
-              </p>
             )}
           </div>
         </div>
@@ -256,10 +308,12 @@ function renderEditorialSection(section: any) {
   );
 }
 
-function renderTestimonialSection(section: any) {
+function renderTestimonialSection(section: SectionBlock) {
   const { title, testimonials, showNames } = section;
 
   if (!title && !testimonials?.length) return null;
+
+  const items = testimonials || [];
 
   return (
     <section className="border-t border-ory-divider/40 bg-ory-cream-deep px-6 py-20 md:px-16 lg:py-28">
@@ -268,10 +322,13 @@ function renderTestimonialSection(section: any) {
           <h2 className="mt-2 font-serif text-[34px] uppercase leading-tight tracking-[0.08em] text-ory-ink sm:text-[44px]">
             {title}
           </h2>
-          {testimonials.length > 0 && (
+          {items.length > 0 && (
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {testimonials.map((test: any, idx: number) => (
-                <div key={idx} className="border border-ory-divider/40 bg-ory-cream p-5 transition-colors hover:border-ory-divider">
+              {items.map((test: any, idx: number) => (
+                <div
+                  key={idx}
+                  className="border border-ory-divider/40 bg-ory-cream p-5 transition-colors hover:border-ory-divider"
+                >
                   <div className="flex items-start gap-3">
                     {showNames && <div className="font-serif text-[18px] text-ory-ink">{test.author}</div>}
                     <div>
@@ -288,20 +345,20 @@ function renderTestimonialSection(section: any) {
                 </div>
               ))}
             </div>
-          ))}
+          )}
         </div>
       </div>
     </section>
   );
 }
 
-function renderNewsletterSection(section: any) {
-  const { title, subtitle, ctaText, ctaUrl, showForm, backgroundColor } = section;
+function renderNewsletterSection(section: SectionBlock) {
+  const { title, subtitle, ctaText, ctaUrl, showForm } = section;
 
   if (!title) return null;
 
   return (
-    <section className="border-t border-ory-divider/40 bg-ory-cream ${backgroundColor || 'ory-cream'} px-6 py-20 md:px-16 lg:py-28">
+    <section className="border-t border-ory-divider/40 bg-ory-cream px-6 py-20 md:px-16 lg:py-28">
       <div className="mx-auto max-w-[1152px]">
         <div className="px-6 md:px-0">
           <div className="flex flex-col items-start justify-between gap-6">
@@ -309,23 +366,27 @@ function renderNewsletterSection(section: any) {
               {title}
             </h2>
             {subtitle && <p className="mt-3 text-[20px] text-ory-body/80 sm:text-[23px]">{subtitle}</p>}
-            {showForm && ctaText && ctaUrl && (
-              <div className="mt-6 border border-ory-divider/40 bg-ory-cream p-4">
-                <form className="flex flex-col sm:flex-row gap-2">
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="flex-1 border border-ory-divider/60 bg-ory-cream p-3 text-[13px] text-ory-ink focus:border-ory-ink focus:outline-none"
-                  />
-                  <button type="submit" className="border border-ory-ink bg-ory-ink text-[11px] font-medium uppercase tracking-[0.2em] text-white px-6 py-3 transition-all hover:bg-ory-ink/90 active:scale-[0.98]">
-                    {ctaText}
-                  </button>
-                </form>
-              </div>
-            ))}
+            {showForm && (
+              <form className="mt-6 flex w-full max-w-md flex-col gap-2 sm:flex-row">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="flex-1 border border-ory-divider/60 bg-ory-surface/40 p-3 text-[13px] text-ory-ink focus:border-ory-ink focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  className="border border-ory-ink bg-ory-ink text-[11px] font-medium uppercase tracking-[0.2em] text-white px-6 py-3 transition-all hover:bg-ory-ink/90 active:scale-[0.98]"
+                >
+                  {ctaText || "Subscribe"}
+                </button>
+              </form>
+            )}
             {ctaText && ctaUrl && (
               <div className="mt-6">
-                <Link href={ctaUrl} className="border border-ory-ink bg-ory-ink text-[11px] font-medium uppercase tracking-[0.2em] text-white px-6 py-3 transition-all hover:bg-ory-ink/90 active:scale-[0.98]">
+                <Link
+                  href={ctaUrl}
+                  className="border border-ory-ink bg-ory-ink text-[11px] font-medium uppercase tracking-[0.2em] text-white px-6 py-3 transition-all hover:bg-ory-ink/90 active:scale-[0.98]"
+                >
                   {ctaText}
                 </Link>
               </div>
@@ -337,10 +398,12 @@ function renderNewsletterSection(section: any) {
   );
 }
 
-function renderFaqSection(section: any) {
+function renderFaqSection(section: SectionBlock) {
   const { title, faqs } = section;
 
   if (!title && !faqs?.length) return null;
+
+  const items = faqs || [];
 
   return (
     <section className="border-t border-ory-divider/40 bg-ory-cream-deep px-6 py-20 md:px-16 lg:py-28">
@@ -349,9 +412,9 @@ function renderFaqSection(section: any) {
           <h2 className="mt-2 font-serif text-[34px] uppercase leading-tight tracking-[0.08em] text-ory-ink sm:text-[44px]">
             {title}
           </h2>
-          {faqs.length > 0 && (
+          {items.length > 0 && (
             <div className="mt-6 space-y-4">
-              {faqs.map((faq: any, idx: number) => (
+              {items.map((faq: any, idx: number) => (
                 <div key={idx} className="border-b border-ory-divider/30 py-3">
                   <div className="flex items-start justify-between">
                     <p className="font-medium text-ory-ink">{faq.question}</p>
@@ -361,14 +424,14 @@ function renderFaqSection(section: any) {
                 </div>
               ))}
             </div>
-          ))}
+          )}
         </div>
       </div>
     </section>
   );
 }
 
-function renderRichTextSection(section: any) {
+function renderRichTextSection(section: SectionBlock) {
   const { title, content } = section;
 
   if (!title && !content?.length) return null;
@@ -377,16 +440,21 @@ function renderRichTextSection(section: any) {
     <section className="border-t border-ory-divider/40 bg-ory-cream-deep px-6 py-20 md:px-16 lg:py-28">
       <div className="mx-auto max-w-[1152px]">
         <div className="px-6 md:px-0">
-          {title && <h2 className="mt-2 font-serif text-[34px] uppercase leading-tight tracking-[0.08em] text-ory-ink sm:text-[44px]">{title}</h2>}
+          {title && (
+            <h2 className="mt-2 font-serif text-[34px] uppercase leading-tight tracking-[0.08em] text-ory-ink sm:text-[44px]">
+              {title}
+            </h2>
+          )}
           {content && content.length > 0 && (
-            <div className="mt-6 prose prose-inherit max-w-none">
+            <div className="mt-6 max-w-none">
               {content.map((block: any, idx: number) => {
-                if (block._type === 'block') {
-                  const style = block.style || 'normal';
-                  const label = style === 'normal' ? '' : `${style.toUpperCase()} `;
+                if (block._type === "block") {
+                  const style = block.style || "normal";
+                  const label = style === "normal" ? "" : `${style.toUpperCase()} `;
                   return (
                     <p key={idx} className="mt-4 text-ory-body/80">
-                      {label}{block.children?.map((c: any) => c.text).join(' ')}
+                      {label}
+                      {block.children?.map((c: any) => c.text).join(" ")}
                     </p>
                   );
                 }
@@ -400,10 +468,40 @@ function renderRichTextSection(section: any) {
   );
 }
 
+function renderCTASection(section: SectionBlock) {
+  const { title, subtitle, ctaText, ctaUrl } = section;
+
+  if (!title && !subtitle) return null;
+
+  return (
+    <section className="border-t border-ory-divider/40 bg-ory-cream px-6 py-20 md:px-16 lg:py-28">
+      <div className="mx-auto max-w-[1152px]">
+        <div className="flex flex-col items-center justify-between gap-8 text-center md:flex-row md:text-left">
+          <div>
+            {title && (
+              <h2 className="font-serif text-[34px] uppercase leading-tight tracking-[0.08em] text-ory-ink sm:text-[44px]">
+                {title}
+              </h2>
+            )}
+            {subtitle && <p className="mt-3 max-w-lg text-[16px] text-ory-body/80">{subtitle}</p>}
+          </div>
+          {ctaText && ctaUrl && (
+            <Link
+              href={ctaUrl}
+              className="shrink-0 border border-ory-ink bg-ory-ink text-[11px] font-medium uppercase tracking-[0.2em] text-white px-8 py-4 transition-all hover:bg-ory-ink/90 active:scale-[0.98]"
+            >
+              {ctaText}
+            </Link>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function lrgint(colCount: number): string {
-  if (colCount === 1) return 'grid-cols-1';
-  if (colCount === 2) return 'grid-cols-2';
-  if (colCount === 3) return 'grid-cols-3';
-  if (colCount === 4) return 'grid-cols-4';
-  return 'grid-cols-4';
+  if (colCount === 1) return "grid-cols-1";
+  if (colCount === 2) return "grid-cols-2";
+  if (colCount === 3) return "grid-cols-3";
+  return "grid-cols-4";
 }

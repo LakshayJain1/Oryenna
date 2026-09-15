@@ -322,3 +322,13 @@ export const COLLECTION_PRODUCTS_QUERY = groq`
     inStock
   }
 `
+
+export const COMPLIMENTARY_SAMPLES_QUERY = groq`
+  *[_type == "complimentarySample"] | order(orderRank asc, _createdAt asc) {
+    _id,
+    name,
+    notes,
+    volume,
+    description
+  }
+`

@@ -1,17 +1,18 @@
-"use client";
-
 import { client } from "@/sanity/client";
 import { FAQ_PAGE_QUERY } from "@/sanity/queries";
 import type { SanityFaqPage } from "@/sanity/types";
 
+export const revalidate = 60;
+
 type FaqPageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export default async function FaqPage({ params }: FaqPageProps) {
+  const { slug } = await params;
   const page: SanityFaqPage | null = await client.fetch<SanityFaqPage>(
     FAQ_PAGE_QUERY,
-    { slug: params.slug }
+    { slug }
   );
 
   if (!page) {
@@ -22,6 +23,8 @@ export default async function FaqPage({ params }: FaqPageProps) {
     );
   }
 
+  const faqs = page.faqs || [];
+
   return (
     <section className="border-t border-ory-divider/40 bg-ory-cream-deep px-6 py-20 md:px-16 lg:py-28">
       <div className="mx-auto max-w-[1152px]">
@@ -30,7 +33,7 @@ export default async function FaqPage({ params }: FaqPageProps) {
             {page.title}
           </h1>
           <div className="mt-6 space-y-4">
-            {page.faqs?.length > 0 && page.faqs.map((faq: any, idx: number) => (
+            {faqs.map((faq, idx) => (
               <div key={idx} className="border-b border-ory-divider/30 py-3">
                 <div className="flex items-start justify-between">
                   <p className="font-medium text-ory-ink">{faq.question}</p>

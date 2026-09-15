@@ -63,6 +63,20 @@ export type SiteSettings = {
   heroSubtext?: string;
 };
 
+export type ComplimentarySample = {
+  _id: string;
+  _type: "complimentarySample";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  slug?: Slug;
+  notes?: string;
+  volume?: string;
+  description?: string;
+  orderRank?: number;
+};
+
 export type MoodRecommendation = {
   _id: string;
   _type: "moodRecommendation";
@@ -556,6 +570,22 @@ export type FaqSection = {
   }>;
 };
 
+export type FaqPage = {
+  _id: string;
+  _type: "faqPage";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  faqs?: Array<{
+    question?: string;
+    answer?: string;
+    _type: "faq";
+    _key: string;
+  }>;
+};
+
 export type ReturnsPage = {
   _id: string;
   _type: "returnsPage";
@@ -970,5 +1000,5 @@ export type SanityAssetSourceData = {
   url?: string;
 };
 
-export type AllSanitySchemaTypes = Footer | Navbar | SiteSettings | MoodRecommendation | JournalArticle | JournalInsider | Product | ProductInsider | CtaSection | RichTextSection | NewsletterSection | TestimonialSection | EditorialSection | ImageText | CollectionGrid | Collection | ProductGrid | HeroSection | FaqSection | ReturnsPage | ShippingPage | TermsPage | PrivacyPolicyPage | ContactPage | AboutPage | ShopPage | HomePage | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
+export type AllSanitySchemaTypes = Footer | Navbar | SiteSettings | ComplimentarySample | MoodRecommendation | JournalArticle | JournalInsider | Product | ProductInsider | CtaSection | RichTextSection | NewsletterSection | TestimonialSection | EditorialSection | ImageText | CollectionGrid | Collection | ProductGrid | HeroSection | FaqSection | FaqPage | ReturnsPage | ShippingPage | TermsPage | PrivacyPolicyPage | ContactPage | AboutPage | ShopPage | HomePage | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
 export declare const internalGroqTypeReferenceTo: unique symbol;

@@ -1,19 +1,15 @@
-"use client";
-
 import { client } from "@/sanity/client";
 import { HOME_PAGE_QUERY } from "@/sanity/queries";
 import type { SanityHomePage } from "@/sanity/types";
 import { SectionRenderer } from "@/components/section-renderer";
-import { useEffect, useState } from "react";
+
+export const revalidate = 60;
 
 export default async function HomePage() {
-  const [page, setPage] = useState<any>(null);
-
-  useEffect(() => {
-    client.fetch<SanityHomePage>(HOME_PAGE_QUERY, { slug: "home" }).then((data) => {
-      setPage(data);
-    });
-  }, []);
+  const page: SanityHomePage | null = await client.fetch<SanityHomePage>(
+    HOME_PAGE_QUERY,
+    { slug: "home" }
+  );
 
   if (!page) {
     return (
@@ -23,7 +19,8 @@ export default async function HomePage() {
     );
   }
 
-  const sections = page.sections?.sort((a: any, b: any) => (a.orderRank || 0) - (b.orderRank || 0)) || [];
+  const sections = page.sections
+    ?.sort((a, b) => (a.orderRank || 0) - (b.orderRank || 0)) || [];
 
   return (
     <main className="flex-1">

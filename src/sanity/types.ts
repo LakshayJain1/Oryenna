@@ -5,7 +5,72 @@ export interface SanityAsset {
 
 export interface SanityImage {
   asset?: SanityAsset
+  url?: string
   alt?: string
+}
+
+export interface SectionBlock {
+  _type: string
+  sectionType?: string
+  orderRank?: number
+  [key: string]: any
+}
+
+export interface SanityHomePage {
+  title: string
+  slug: string
+  sections: SectionBlock[]
+}
+
+export interface SanityShopPage {
+  title: string
+  slug: string
+  sections: SectionBlock[]
+}
+
+export interface SanityAboutPage {
+  title: string
+  slug: string
+  sections: SectionBlock[]
+}
+
+export interface SanityContactPage {
+  title: string
+  slug: string
+  sections: SectionBlock[]
+}
+
+export interface SanityFaqPage {
+  title: string
+  slug: string
+  faqs?: Array<{
+    question: string
+    answer: string
+  }>
+}
+
+export interface SanityPrivacyPolicyPage {
+  title: string
+  slug: string
+  content?: any[]
+}
+
+export interface SanityTermsPage {
+  title: string
+  slug: string
+  content?: any[]
+}
+
+export interface SanityShippingPage {
+  title: string
+  slug: string
+  content?: any[]
+}
+
+export interface SanityReturnsPage {
+  title: string
+  slug: string
+  content?: any[]
 }
 
 export interface SanityProduct {

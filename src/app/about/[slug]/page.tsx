@@ -1,18 +1,19 @@
-"use client";
-
 import { client } from "@/sanity/client";
 import { ABOUT_PAGE_QUERY } from "@/sanity/queries";
 import type { SanityAboutPage } from "@/sanity/types";
 import { SectionRenderer } from "@/components/section-renderer";
 
+export const revalidate = 60;
+
 type AboutPageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export default async function AboutPage({ params }: AboutPageProps) {
+  const { slug } = await params;
   const page: SanityAboutPage | null = await client.fetch<SanityAboutPage>(
     ABOUT_PAGE_QUERY,
-    { slug: params.slug }
+    { slug }
   );
 
   if (!page) {
@@ -24,7 +25,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
   }
 
   const sections = page.sections
-    ?.sort((a: any, b: any) => (a.orderRank || 0) - (b.orderRank || 0)) || [];
+    ?.sort((a, b) => (a.orderRank || 0) - (b.orderRank || 0)) || [];
 
   return (
     <main className="flex-1">

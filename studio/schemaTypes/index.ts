@@ -7,6 +7,7 @@ import { privacyPolicyPage } from './privacyPolicyPage'
 import { termsPage } from './termsPage'
 import { shippingPage } from './shippingPage'
 import { returnsPage } from './returnsPage'
+import { faqPage } from './faqPage'
 import { faqSection } from './faqSection'
 import { heroSection } from './heroSection'
 import { productGrid } from './productGrid'
@@ -23,6 +24,7 @@ import { journalArticle } from './journalArticle'
 import { productInsider } from './productInsider'
 import { journalInsider } from './journalInsider'
 import { moodRecommendation } from './moodRecommendation'
+import { complimentarySample } from './complimentarySample'
 import { siteSettings } from './siteSettings'
 import { navbar } from './navbar'
 import { footer } from './footer'
@@ -36,6 +38,7 @@ export const schemaTypes: schemaTypeDefinition[] = [
   termsPage,
   shippingPage,
   returnsPage,
+  faqPage,
   faqSection,
   heroSection,
   productGrid,
@@ -52,6 +55,7 @@ export const schemaTypes: schemaTypeDefinition[] = [
   productInsider,
   journalInsider,
   moodRecommendation,
+  complimentarySample,
   siteSettings,
   navbar,
   footer,

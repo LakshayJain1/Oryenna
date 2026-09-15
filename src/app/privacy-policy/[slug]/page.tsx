@@ -1,17 +1,18 @@
-"use client";
-
 import { client } from "@/sanity/client";
 import { PRIVACY_POLICY_PAGE_QUERY } from "@/sanity/queries";
 import type { SanityPrivacyPolicyPage } from "@/sanity/types";
 
+export const revalidate = 60;
+
 type PrivacyPolicyPageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export default async function PrivacyPolicyPage({ params }: PrivacyPolicyPageProps) {
+  const { slug } = await params;
   const page: SanityPrivacyPolicyPage | null = await client.fetch<SanityPrivacyPolicyPage>(
     PRIVACY_POLICY_PAGE_QUERY,
-    { slug: params.slug }
+    { slug }
   );
 
   if (!page) {
@@ -22,6 +23,8 @@ export default async function PrivacyPolicyPage({ params }: PrivacyPolicyPagePro
     );
   }
 
+  const content = page.content || [];
+
   return (
     <section className="border-t border-ory-divider/40 bg-ory-cream-deep px-6 py-20 md:px-16 lg:py-28">
       <div className="mx-auto max-w-[1152px]">
@@ -29,8 +32,8 @@ export default async function PrivacyPolicyPage({ params }: PrivacyPolicyPagePro
           <h1 className="font-serif text-[36px] uppercase leading-tight tracking-[0.06em] text-ory-ink sm:text-[48px]">
             {page.title}
           </h1>
-          <div className="mt-6 text-ory-body/80 prose prose-inherit max-w-none">
-            {page.content?.length > 0 && page.content.map((block: any, idx: number) => {
+          <div className="mt-6 text-ory-body/80 max-w-none">
+            {content.map((block: any, idx: number) => {
               if (block._type === 'block') {
                 return (
                   <p key={idx} className="mt-4">
