@@ -5,15 +5,12 @@ import { SectionRenderer } from "@/components/section-renderer";
 
 export const revalidate = 60;
 
-type ContactPageProps = {
-  params: Promise<{ slug: string }>;
-};
+const CONTACT_SLUG = "contact";
 
-export default async function ContactPage({ params }: ContactPageProps) {
-  const { slug } = await params;
+export default async function ContactPage() {
   const page: SanityContactPage | null = await client.fetch<SanityContactPage>(
     CONTACT_PAGE_QUERY,
-    { slug }
+    { slug: CONTACT_SLUG }
   );
 
   if (!page) {

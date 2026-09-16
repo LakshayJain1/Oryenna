@@ -1,18 +1,15 @@
 import { client } from "@/sanity/client";
-import { PRIVACY_POLICY_PAGE_QUERY } from "@/sanity/queries";
-import type { SanityPrivacyPolicyPage } from "@/sanity/types";
+import { SHIPPING_PAGE_QUERY } from "@/sanity/queries";
+import type { SanityShippingPage } from "@/sanity/types";
 
 export const revalidate = 60;
 
-type PrivacyPolicyPageProps = {
-  params: Promise<{ slug: string }>;
-};
+const SHIPPING_SLUG = "shipping";
 
-export default async function PrivacyPolicyPage({ params }: PrivacyPolicyPageProps) {
-  const { slug } = await params;
-  const page: SanityPrivacyPolicyPage | null = await client.fetch<SanityPrivacyPolicyPage>(
-    PRIVACY_POLICY_PAGE_QUERY,
-    { slug }
+export default async function ShippingPage() {
+  const page: SanityShippingPage | null = await client.fetch<SanityShippingPage>(
+    SHIPPING_PAGE_QUERY,
+    { slug: SHIPPING_SLUG }
   );
 
   if (!page) {

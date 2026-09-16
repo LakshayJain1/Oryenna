@@ -432,10 +432,10 @@ const navbar = {
   announcementText:
     'Complimentary White-Glove Shipping on Orders Over $150 · Hand-Poured in Provence',
   navLinks: [
-    { label: 'Collection', url: '/collections/signature' },
+    { label: 'Shop', url: '/shop' },
     { label: 'Journal', url: '/journal' },
-    { label: 'About', url: '/about/about' },
-    { label: 'Contact', url: '/contact/contact' },
+    { label: 'About', url: '/about' },
+    { label: 'Contact', url: '/contact' },
   ],
 }
 
@@ -449,28 +449,28 @@ const footer = {
     {
       columnTitle: 'The Atelier',
       links: [
-        { label: 'Manifesto', url: '/about/about' },
-        { label: 'Ritual of the Flame', url: '/about/about' },
+        { label: 'Manifesto', url: '/about' },
+        { label: 'Ritual of the Flame', url: '/about' },
         { label: 'The Journal', url: '/journal' },
-        { label: 'Contact the Atelier', url: '/contact/contact' },
+        { label: 'Contact the Atelier', url: '/contact' },
       ],
     },
     {
       columnTitle: 'Fragrance Pours',
       links: [
+        { label: 'Shop All', url: '/shop' },
         { label: 'Signature Collection', url: '/collections/signature' },
         { label: 'Amber Candle', url: '/product/amber' },
         { label: 'Santal Candle', url: '/product/santal' },
-        { label: 'Cellar Archive', url: '/collections/signature' },
       ],
     },
     {
       columnTitle: 'Client Care',
       links: [
-        { label: 'Shipping', url: '/shipping-page/shipping' },
-        { label: 'Returns', url: '/returns-page/returns' },
-        { label: 'Terms of Service', url: '/terms/terms' },
-        { label: 'Privacy Protocol', url: '/privacy-policy/privacy-policy' },
+        { label: 'Shipping', url: '/shipping' },
+        { label: 'Returns', url: '/returns' },
+        { label: 'Terms of Service', url: '/terms' },
+        { label: 'Privacy Protocol', url: '/privacy-policy' },
       ],
     },
     {
@@ -624,6 +624,17 @@ const pages = [
     sections: [
       { _type: 'reference', _ref: 'sec-home-cta' },
       { _type: 'reference', _ref: 'sec-home-faq' },
+    ],
+  },
+  {
+    _id: 'page-shop',
+    _type: 'shopPage',
+    title: 'Shop',
+    slug: { _type: 'slug', current: 'shop' },
+    sections: [
+      { _type: 'reference', _ref: 'sec-home-hero' },
+      { _type: 'reference', _ref: 'sec-home-collection-grid' },
+      { _type: 'reference', _ref: 'sec-home-newsletter' },
     ],
   },
   {

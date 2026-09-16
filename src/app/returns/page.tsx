@@ -1,18 +1,15 @@
 import { client } from "@/sanity/client";
-import { SHIPPING_PAGE_QUERY } from "@/sanity/queries";
-import type { SanityShippingPage } from "@/sanity/types";
+import { RETURNS_PAGE_QUERY } from "@/sanity/queries";
+import type { SanityReturnsPage } from "@/sanity/types";
 
 export const revalidate = 60;
 
-type ShippingPageProps = {
-  params: Promise<{ slug: string }>;
-};
+const RETURNS_SLUG = "returns";
 
-export default async function ShippingPage({ params }: ShippingPageProps) {
-  const { slug } = await params;
-  const page: SanityShippingPage | null = await client.fetch<SanityShippingPage>(
-    SHIPPING_PAGE_QUERY,
-    { slug }
+export default async function ReturnsPage() {
+  const page: SanityReturnsPage | null = await client.fetch<SanityReturnsPage>(
+    RETURNS_PAGE_QUERY,
+    { slug: RETURNS_SLUG }
   );
 
   if (!page) {

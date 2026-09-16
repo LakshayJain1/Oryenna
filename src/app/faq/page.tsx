@@ -4,15 +4,12 @@ import type { SanityFaqPage } from "@/sanity/types";
 
 export const revalidate = 60;
 
-type FaqPageProps = {
-  params: Promise<{ slug: string }>;
-};
+const FAQ_SLUG = "faq";
 
-export default async function FaqPage({ params }: FaqPageProps) {
-  const { slug } = await params;
+export default async function FaqPage() {
   const page: SanityFaqPage | null = await client.fetch<SanityFaqPage>(
     FAQ_PAGE_QUERY,
-    { slug }
+    { slug: FAQ_SLUG }
   );
 
   if (!page) {

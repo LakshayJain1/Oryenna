@@ -175,7 +175,7 @@ export const PRODUCT_BY_SLUG_QUERY = groq`
       _id,
       url
     },
-    imageAlt: image.alt,
+    "imageAlt": image.alt,
     collection -> {
       name,
       slug
@@ -211,7 +211,7 @@ export const PRODUCTS_LIST_QUERY = groq`
       _id,
       url
     },
-    imageAlt: image.alt,
+    "imageAlt": image.alt,
     inStock
   }
 `

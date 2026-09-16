@@ -1,19 +1,16 @@
 import { client } from "@/sanity/client";
-import { ABOUT_PAGE_QUERY } from "@/sanity/queries";
-import type { SanityAboutPage } from "@/sanity/types";
+import { SHOP_PAGE_QUERY } from "@/sanity/queries";
+import type { SanityShopPage } from "@/sanity/types";
 import { SectionRenderer } from "@/components/section-renderer";
 
 export const revalidate = 60;
 
-type AboutPageProps = {
-  params: Promise<{ slug: string }>;
-};
+const SHOP_SLUG = "shop";
 
-export default async function AboutPage({ params }: AboutPageProps) {
-  const { slug } = await params;
-  const page: SanityAboutPage | null = await client.fetch<SanityAboutPage>(
-    ABOUT_PAGE_QUERY,
-    { slug }
+export default async function ShopPage() {
+  const page: SanityShopPage | null = await client.fetch<SanityShopPage>(
+    SHOP_PAGE_QUERY,
+    { slug: SHOP_SLUG }
   );
 
   if (!page) {
