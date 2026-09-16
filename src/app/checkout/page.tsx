@@ -162,6 +162,7 @@ export default function CheckoutPage() {
                   state,
                   saveAddress,
                 },
+                customerEmail: email,
               }),
             });
             const verifyData = await verifyRes.json();
