@@ -2,12 +2,23 @@
 
 import { useAuth, UserButton } from '@clerk/nextjs';
 import Image from "next/image";
+import Link from "next/link";
 
 export function ClerkAccountTrigger({ onOpenAuth }: { onOpenAuth: () => void }) {
   const { isSignedIn } = useAuth();
 
   if (isSignedIn) {
-    return <UserButton />;
+    return (
+      <div className="flex items-center gap-3">
+        <Link
+          href="/account"
+          className="hidden text-[11px] uppercase tracking-[0.18em] text-ory-body transition-colors hover:text-ory-ink sm:inline"
+        >
+          Account
+        </Link>
+        <UserButton />
+      </div>
+    );
   }
 
   return (

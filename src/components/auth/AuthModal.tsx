@@ -9,6 +9,13 @@ export function AuthModal() {
   const { isAuthOpen, setIsAuthOpen, authTab, setAuthTab } = useCart();
   const { isSignedIn } = useUser();
 
+  // Close modal automatically when user successfully signs in
+  useEffect(() => {
+    if (isSignedIn && isAuthOpen) {
+      setIsAuthOpen(false);
+    }
+  }, [isSignedIn, isAuthOpen, setIsAuthOpen]);
+
   // Close on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
