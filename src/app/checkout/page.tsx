@@ -9,8 +9,11 @@ import { complimentarySamples as fallbackSamples } from "@/data/products";
 import { client } from "@/sanity/client";
 import { COMPLIMENTARY_SAMPLES_QUERY } from "@/sanity/queries";
 import type { SanityComplimentarySample } from "@/sanity/types";
+import { useUser } from "@clerk/nextjs";
 
 export default function CheckoutPage() {
+  const { user } = useUser();
+  const [saveAddress, setSaveAddress] = useState(true);
   const {
     items,
     updateQuantity,
@@ -139,7 +142,7 @@ export default function CheckoutPage() {
         order_id: orderData.orderId,
         handler: async function (response: any) {
           try {
-            // Verify payment signature
+             // Verify payment signature
             const verifyRes = await fetch("/api/razorpay/verify", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -147,6 +150,18 @@ export default function CheckoutPage() {
                 orderId: response.razorpay_order_id,
                 paymentId: response.razorpay_payment_id,
                 signature: response.razorpay_signature,
+                userId: user?.id,
+                orderPayload: {
+                  id: "ORY-" + Math.floor(100000 + Math.random() * 900000),
+                  date: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+                  total: paymentAmountINR,
+                  summary: items.map((i) => `${i.name} (x${i.quantity})`).join(", "),
+                  pin: zip,
+                  address,
+                  city,
+                  state,
+                  saveAddress,
+                },
               }),
             });
             const verifyData = await verifyRes.json();
@@ -470,21 +485,35 @@ export default function CheckoutPage() {
                       className="mt-1.5 h-11 w-full border border-ory-divider/60 bg-ory-cream-deep px-3 text-[13px] text-ory-ink focus:border-ory-ink focus:outline-hidden"
                     />
                   </div>
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-[0.16em] text-ory-muted">
-                      Postal / ZIP Code
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={zip}
-                      onChange={(e) => setZip(e.target.value)}
-                      className="mt-1.5 h-11 w-full border border-ory-divider/60 bg-ory-cream-deep px-3 text-[13px] text-ory-ink focus:border-ory-ink focus:outline-hidden"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+                   <div>
+                     <label className="block text-[10px] uppercase tracking-[0.16em] text-ory-muted">
+                       Postal / ZIP Code
+                     </label>
+                     <input
+                       type="text"
+                       required
+                       value={zip}
+                       onChange={(e) => setZip(e.target.value)}
+                       className="mt-1.5 h-11 w-full border border-ory-divider/60 bg-ory-cream-deep px-3 text-[13px] text-ory-ink focus:border-ory-ink focus:outline-hidden"
+                     />
+                   </div>
+                 </div>
+
+                 {/* Save Address Checkbox for signed-in users */}
+                 <div className="mt-4 flex items-center gap-2 pt-2">
+                   <input
+                     type="checkbox"
+                     id="save-address"
+                     checked={saveAddress}
+                     onChange={(e) => setSaveAddress(e.target.checked)}
+                     className="size-4 rounded-none border-ory-divider text-ory-ink focus:ring-0"
+                   />
+                   <label htmlFor="save-address" className="text-[12px] text-ory-body cursor-pointer select-none">
+                     Save this shipping address to my Atelier account for future purchases
+                   </label>
+                 </div>
+               </div>
+             </div>
 
             {/* Section 3: Courier Delivery Method */}
             <div className="border border-ory-divider/40 bg-ory-cream p-6 sm:p-8">
