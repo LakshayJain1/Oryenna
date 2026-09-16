@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
 import { Price } from "@/components/Price";
+import { ProductDetailAddToCart } from "@/components/cart/AddToBag";
 
 export const revalidate = 60;
 
@@ -92,6 +93,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   {product.badge}
                 </span>
               )}
+            </div>
+
+            <div className="mt-6">
+              <ProductDetailAddToCart
+                _id={product._id}
+                name={product.name}
+                price={product.price}
+                priceINR={product.priceINR}
+                weight={product.weight}
+                notes={product.notes}
+                image={imageUrl || ""}
+                inStock={product.inStock}
+              />
             </div>
 
             {/* Olfactory Pyramid */}

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { urlForImage } from "@/sanity/image";
 import type { SectionBlock } from "@/sanity/types";
-import { Price } from "@/components/Price";
+import { ProductCard } from "@/components/home/ProductCard";
 
 function getImageUrl(image: any): string | null {
   if (!image) return null;
@@ -202,20 +202,7 @@ function renderCollectionGridSection(section: SectionBlock) {
         <div className={`mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:${gridClass}`}>
           {products.length > 0 ? (
             products.map((product: any) => (
-              <div
-                key={product._id}
-                className="border border-ory-divider/40 bg-ory-cream p-4 transition-colors hover:border-ory-divider"
-              >
-                <h3 className="font-serif text-[20px] text-ory-ink">{product.name}</h3>
-                <p className="mt-1 text-ory-body">
-                  <Price usd={product.price} inr={product.priceINR} />
-                </p>
-                {product.notes && (
-                  <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-ory-accent font-medium">
-                    {product.notes}
-                  </p>
-                )}
-              </div>
+              <ProductCard key={product._id} product={product} />
             ))
           ) : (
             <p className="text-ory-muted text-sm">No products in this collection</p>

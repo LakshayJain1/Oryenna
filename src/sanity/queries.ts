@@ -1,14 +1,46 @@
 import { groq } from 'next-sanity'
 
+const SECTION_PRODUCT_FRAGMENT = groq`
+  collection -> {
+    _id,
+    name,
+    slug,
+    "products": products[] -> {
+      _id,
+      name,
+      slug,
+      price,
+      priceINR,
+      badge,
+      notes,
+      description,
+      weight,
+      burnTime,
+      inStock,
+      "imageAlt": image.alt,
+      "image": image.asset-> {
+        _id,
+        url
+      }
+    }
+  }
+`
+
+const PAGE_SECTIONS = groq`
+  "sections": sections[] -> {
+    ...,
+    _type,
+    sectionType,
+    orderRank,
+    ${SECTION_PRODUCT_FRAGMENT}
+  }
+`
+
 export const HOME_PAGE_QUERY = groq`
   *[_type == "homePage" && slug.current == $slug][0] {
     title,
     slug,
-    "sections": sections[] -> {
-      ...,
-      sectionType,
-      orderRank
-    }
+    ${PAGE_SECTIONS}
   }
 `
 
@@ -16,11 +48,7 @@ export const SHOP_PAGE_QUERY = groq`
   *[_type == "shopPage" && slug.current == $slug][0] {
     title,
     slug,
-    "sections": sections[] -> {
-      ...,
-      sectionType,
-      orderRank
-    }
+    ${PAGE_SECTIONS}
   }
 `
 
@@ -28,11 +56,7 @@ export const ABOUT_PAGE_QUERY = groq`
   *[_type == "aboutPage" && slug.current == $slug][0] {
     title,
     slug,
-    "sections": sections[] -> {
-      ...,
-      sectionType,
-      orderRank
-    }
+    ${PAGE_SECTIONS}
   }
 `
 
@@ -40,11 +64,7 @@ export const CONTACT_PAGE_QUERY = groq`
   *[_type == "contactPage" && slug.current == $slug][0] {
     title,
     slug,
-    "sections": sections[] -> {
-      ...,
-      sectionType,
-      orderRank
-    }
+    ${PAGE_SECTIONS}
   }
 `
 
@@ -298,6 +318,11 @@ export const COLLECTION_BY_SLUG_QUERY = groq`
       priceINR,
       badge,
       notes,
+      description,
+      weight,
+      burnTime,
+      inStock,
+      "imageAlt": image.alt,
       "image": image.asset-> {
         _id,
         url
