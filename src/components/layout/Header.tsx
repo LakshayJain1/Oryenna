@@ -4,18 +4,15 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
-import { UserButton } from "@clerk/nextjs";
 import { ClerkAccountTrigger } from "@/components/auth/ClerkAccountTrigger";
-import { groq } from "next-sanity";
 import { client } from "@/sanity/client";
 import { NAVBAR_QUERY } from "@/sanity/queries_footer_navbar";
 
 export function Header() {
   const [navLinks, setNavLinks] = useState<Array<{ label: string; url: string }>>([]);
   const [announcementText, setAnnouncementText] = useState<string>("");
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { totalItemsCount } = useCart();
+  const { totalItemsCount, setIsBagOpen, setIsAuthOpen } = useCart();
 
   useEffect(() => {
     // Fetch navbar data from Sanity on client mount
@@ -46,7 +43,7 @@ export function Header() {
             </span>
           </Link>
 
-{/* Center: Desktop Navigation Links - from Sanity */}
+          {/* Center: Desktop Navigation Links - from Sanity */}
           <nav className="hidden items-center gap-8 md:flex" aria-label="Main Navigation">
             {navLinks.map((link) => (
               <Link
@@ -61,31 +58,13 @@ export function Header() {
 
           {/* Right: Actions (Account, Bag, Mobile Toggle) */}
           <div className="flex items-center gap-4 sm:gap-6">
-            {/* Account trigger */}
+            {/* Account trigger - shows UserButton when signed in, or opens auth modal */}
             <ClerkAccountTrigger onOpenAuth={() => setIsAuthOpen(true)} />
 
-            {/* Bag trigger */}
+            {/* Bag trigger - opens the BagDrawer */}
             <button
               type="button"
-              onClick={() => setIsAuthOpen(true)}  // Could open modal or show user menu
-              className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] text-ory-body transition-colors hover:text-ory-ink"
-            >
-              <span className="hidden sm:inline">Account</span>
-              <div className="flex size-7 items-center justify-center rounded-full border border-ory-divider/60 bg-ory-cream hover:border-ory-ink">
-                <Image
-                  src="/icons/user.svg"
-                  alt="User profile"
-                  width={11}
-                  height={11}
-                  className="opacity-70"
-                />
-              </div>
-            </button>
-
-            {/* Bag trigger */}
-            <button
-              type="button"
-              onClick={() => setIsAuthOpen(true)}
+              onClick={() => setIsBagOpen(true)}
               className="flex items-center gap-2 border border-ory-divider/50 bg-ory-cream-deep/60 px-3.5 py-1.5 text-[11px] uppercase tracking-[0.18em] text-ory-ink transition-all hover:border-ory-ink hover:bg-ory-cream active:scale-[0.97]"
               aria-label={`Shopping bag containing ${totalItemsCount} items`}
             >

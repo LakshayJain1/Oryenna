@@ -1,13 +1,13 @@
 'use client';
 
-import { useAuth } from '@clerk/nextjs';
+import { useAuth, UserButton } from '@clerk/nextjs';
 import Image from "next/image";
 
 export function ClerkAccountTrigger({ onOpenAuth }: { onOpenAuth: () => void }) {
   const { isSignedIn } = useAuth();
 
   if (isSignedIn) {
-    return null; // When signed in, UserButton is shown directly or managed via modal/header
+    return <UserButton />;
   }
 
   return (
