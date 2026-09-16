@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { urlForImage } from "@/sanity/image";
 import type { SectionBlock } from "@/sanity/types";
+import { Price } from "@/components/Price";
 
 function getImageUrl(image: any): string | null {
   if (!image) return null;
@@ -206,7 +207,9 @@ function renderCollectionGridSection(section: SectionBlock) {
                 className="border border-ory-divider/40 bg-ory-cream p-4 transition-colors hover:border-ory-divider"
               >
                 <h3 className="font-serif text-[20px] text-ory-ink">{product.name}</h3>
-                <p className="mt-1 text-ory-body">${product.price}</p>
+                <p className="mt-1 text-ory-body">
+                  <Price usd={product.price} inr={product.priceINR} />
+                </p>
                 {product.notes && (
                   <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-ory-accent font-medium">
                     {product.notes}

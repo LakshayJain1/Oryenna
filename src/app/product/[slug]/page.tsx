@@ -4,6 +4,7 @@ import type { SanityProduct } from "@/sanity/types";
 import Image from "next/image";
 import Link from "next/link";
 import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
+import { Price } from "@/components/Price";
 
 export const revalidate = 60;
 
@@ -84,7 +85,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             <div className="mt-2 flex items-baseline justify-between">
               <span className="font-serif text-[30px] text-ory-ink">
-                ${product.price}
+                <Price usd={product.price} inr={product.priceINR} />
               </span>
               {product.badge && (
                 <span className="border border-ory-divider/40 bg-ory-cream/95 px-3 py-1 text-[9px] font-medium uppercase tracking-[0.2em] text-ory-accent shadow-xs">

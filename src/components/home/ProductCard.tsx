@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { SanityProduct } from "@/sanity/types";
 import { urlForImage } from "@/sanity/image";
 import { useCart } from "@/context/CartContext";
+import { useCurrency } from "@/context/CurrencyContext";
 
 type ProductCardProps = {
   product: SanityProduct | {
@@ -12,6 +13,7 @@ type ProductCardProps = {
     _id?: string;
     name: string;
     price: number;
+    priceINR?: number;
     badge?: string;
     notes: string;
     description: string;
@@ -23,6 +25,7 @@ type ProductCardProps = {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+  const { formatPrice } = useCurrency();
   const [isAdding, setIsAdding] = useState(false);
 
   // Resolve image URL from Sanity image object or local string
@@ -42,6 +45,7 @@ export function ProductCard({ product }: ProductCardProps) {
         id: productId,
         name: product.name,
         price: product.price,
+        priceINR: (product as any).priceINR,
         weight: product.weight,
         notes: product.notes,
         image: imageUrl,
@@ -76,7 +80,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <h3 className="font-serif text-[20px] font-medium uppercase tracking-[0.14em]">
               {product.name}
             </h3>
-            <p className="font-serif text-[18px] text-ory-ink">${product.price}</p>
+            <p className="font-serif text-[18px] text-ory-ink">{formatPrice(product.price, (product as any).priceINR)}</p>
           </div>
 
           <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-ory-accent font-medium">

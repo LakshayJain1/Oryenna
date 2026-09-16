@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { useCurrency, USD_TO_INR } from "@/context/CurrencyContext";
 import { complimentarySamples as fallbackSamples } from "@/data/products";
 import { client } from "@/sanity/client";
 import { COMPLIMENTARY_SAMPLES_QUERY } from "@/sanity/queries";
@@ -15,6 +16,7 @@ export default function CheckoutPage() {
     updateQuantity,
     removeFromCart,
     subtotal,
+    subtotalINR,
     isFreeShippingEligible,
     selectedSamples,
     toggleSample,
@@ -26,6 +28,7 @@ export default function CheckoutPage() {
     setShippingMethod,
     clearCart,
   } = useCart();
+  const { currency, formatTotal, formatPrice } = useCurrency();
 
   // Form states
   const [email, setEmail] = useState("astrid.lind@atelier.com");
@@ -81,9 +84,18 @@ export default function CheckoutPage() {
 
   const shippingCost =
     shippingMethod === "express" ? 18 : isFreeShippingEligible ? 0 : 8;
+  const shippingCostINR = Math.round(shippingCost * USD_TO_INR);
   const discountAmount = Math.round((subtotal * discountPercent) / 100);
+  const discountAmountINR = Math.round((subtotalINR * discountPercent) / 100);
   const estimatedTax = Math.round((subtotal - discountAmount) * 0.08 * 100) / 100;
+  const estimatedTaxINR = Math.round((subtotalINR - discountAmountINR) * 0.08);
   const total = Math.max(0, subtotal - discountAmount + shippingCost + estimatedTax);
+  const totalINR = Math.max(
+    0,
+    subtotalINR - discountAmountINR + shippingCostINR + estimatedTaxINR
+  );
+  // Razorpay only supports INR — convert the USD total on the web when in USD mode.
+  const paymentAmountINR = currency === "INR" ? totalINR : Math.round(total * USD_TO_INR);
 
   const handleApplyPromo = (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,7 +117,7 @@ export default function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: total,
+          amount: paymentAmountINR,
           currency: "INR",
           receipt: "rcpt_" + Math.floor(100000 + Math.random() * 900000),
         }),
@@ -297,7 +309,11 @@ export default function CheckoutPage() {
                             <p className="text-[10px] text-ory-muted">{item.size || item.weight}</p>
                           </div>
                           <p className="font-serif text-[16px] text-ory-ink">
-                            ${item.price * item.quantity}
+                            {formatPrice(
+                              item.price * item.quantity,
+                              (item.priceINR ?? Math.round(item.price * USD_TO_INR)) *
+                                item.quantity
+                            )}
                           </p>
                         </div>
 
@@ -503,7 +519,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <span className="font-serif text-[15px] text-ory-ink">
-                    {isFreeShippingEligible ? "Complimentary" : "$8.00"}
+                    {isFreeShippingEligible ? "Complimentary" : formatTotal(8, Math.round(8 * USD_TO_INR))}
                   </span>
                 </label>
 
@@ -532,7 +548,7 @@ export default function CheckoutPage() {
                       </p>
                     </div>
                   </div>
-                  <span className="font-serif text-[15px] text-ory-ink">$18.00</span>
+                  <span className="font-serif text-[15px] text-ory-ink">{formatTotal(18, Math.round(18 * USD_TO_INR))}</span>
                 </label>
               </div>
             </div>
@@ -630,25 +646,35 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-ory-body">
                   <span>Subtotal ({items.length} items)</span>
                   <span className="font-serif text-[15px] text-ory-ink">
-                    ${subtotal}.00
+                    {formatTotal(subtotal, subtotalINR)}
                   </span>
                 </div>
 
                 {discountPercent > 0 && (
                   <div className="flex justify-between text-ory-accent">
                     <span>Privilege Discount ({discountPercent}%)</span>
-                    <span>-${discountAmount}.00</span>
+                    <span>
+                      -
+                      {formatTotal(
+                        discountAmount,
+                        Math.round(discountAmount * USD_TO_INR)
+                      )}
+                    </span>
                   </div>
                 )}
 
                 <div className="flex justify-between text-ory-body">
                   <span>Atelier Dispatch</span>
-                  <span>{shippingCost === 0 ? "Complimentary" : `$${shippingCost}.00`}</span>
+                  <span>
+                    {shippingCost === 0
+                      ? "Complimentary"
+                      : formatTotal(shippingCost, shippingCostINR)}
+                  </span>
                 </div>
 
                 <div className="flex justify-between text-ory-body">
                   <span>Estimated Sales Tax</span>
-                  <span>${estimatedTax.toFixed(2)}</span>
+                  <span>{formatTotal(estimatedTax, estimatedTaxINR)}</span>
                 </div>
 
                 <div className="flex justify-between text-ory-muted text-[11px]">
@@ -689,7 +715,7 @@ export default function CheckoutPage() {
               {/* Grand total */}
               <div className="mt-6 flex items-baseline justify-between border-t border-ory-divider/40 pt-4 font-serif text-[24px] text-ory-ink">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>{formatTotal(total, totalINR)}</span>
               </div>
 
               {/* Express Checkout Options */}
@@ -751,7 +777,7 @@ export default function CheckoutPage() {
                 >
                   {isSubmitting
                     ? "Connecting to Razorpay..."
-                    : `Pay with Razorpay — $${total.toFixed(2)}`}
+                    : `Pay with Razorpay — ${formatTotal(total, totalINR)}`}
                 </button>
               </div>
 

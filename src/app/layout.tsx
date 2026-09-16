@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { BagDrawer } from "@/components/cart/BagDrawer";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { CartProvider } from "@/context/CartContext";
+import { CurrencyProvider } from "@/context/CurrencyContext";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -44,13 +45,15 @@ export default function RootLayout({
         className={`${dmSans.variable} ${ebGaramond.variable} ${cormorant.variable} h-full antialiased`}
       >
         <body className="flex min-h-full flex-col bg-ory-cream font-sans text-ory-body">
-          <CartProvider>
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <BagDrawer />
-            <AuthModal />
-          </CartProvider>
+          <CurrencyProvider>
+            <CartProvider>
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+              <BagDrawer />
+              <AuthModal />
+            </CartProvider>
+          </CurrencyProvider>
         </body>
       </html>
     </ClerkProvider>

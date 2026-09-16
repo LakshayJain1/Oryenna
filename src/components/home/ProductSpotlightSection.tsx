@@ -6,6 +6,7 @@ import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
 import type { SanityProduct } from "@/sanity/types";
 import { urlForImage } from "@/sanity/image";
 import { useCart } from "@/context/CartContext";
+import { useCurrency, USD_TO_INR } from "@/context/CurrencyContext";
 
 const fallbackGallery = [
   {
@@ -64,9 +65,13 @@ export function ProductSpotlightSection({ spotlightProduct }: ProductSpotlightSe
   const [isAdding, setIsAdding] = useState(false);
 
   const { addToCart } = useCart();
+  const { formatPrice } = useCurrency();
 
   const basePrice = spotlightProduct?.price || 78;
+  const basePriceINR = spotlightProduct?.priceINR || Math.round(basePrice * USD_TO_INR);
   const price = selectedSize === "standard" ? basePrice : Math.round(basePrice * 1.54);
+  const priceINR =
+    selectedSize === "standard" ? basePriceINR : Math.round(basePriceINR * 1.54);
   const weight = selectedSize === "standard" ? (spotlightProduct?.weight || "290G / 10.2 OZ") : "500G / 17.6 OZ";
   const burnTime = selectedSize === "standard" ? (spotlightProduct?.burnTime || "55 Hours") : "90 Hours";
   const productName = spotlightProduct?.name || "Amber";
@@ -97,6 +102,7 @@ export function ProductSpotlightSection({ spotlightProduct }: ProductSpotlightSe
         id: selectedSize === "standard" ? (spotlightProduct?._id || "amber") : `${spotlightProduct?._id || "amber"}-grande`,
         name: `${productName} Candle (${selectedSize === "standard" ? "Standard" : "Grande"})`,
         price,
+        priceINR,
         weight,
         notes: spotlightProduct?.notes || "Warm Woods · Amber · Smoke",
         image: galleryImages[0].src,
@@ -172,7 +178,7 @@ export function ProductSpotlightSection({ spotlightProduct }: ProductSpotlightSe
                 {productName} Candle
               </h2>
               <span className="font-serif text-[26px] text-ory-ink">
-                ${price}
+                {formatPrice(price, priceINR)}
               </span>
             </div>
 
@@ -232,7 +238,7 @@ export function ProductSpotlightSection({ spotlightProduct }: ProductSpotlightSe
                   }`}
                 >
                   <span>290G (Standard)</span>
-                  <span>${basePrice}</span>
+                  <span>{formatPrice(basePrice, basePriceINR)}</span>
                 </button>
                 <button
                   type="button"
@@ -244,7 +250,7 @@ export function ProductSpotlightSection({ spotlightProduct }: ProductSpotlightSe
                   }`}
                 >
                   <span>500G (Grande)</span>
-                  <span>${Math.round(basePrice * 1.54)}</span>
+                  <span>{formatPrice(Math.round(basePrice * 1.54), Math.round(basePriceINR * 1.54))}</span>
                 </button>
               </div>
             </div>
@@ -280,7 +286,7 @@ export function ProductSpotlightSection({ spotlightProduct }: ProductSpotlightSe
                 onClick={handleAddToCart}
                 className="flex h-[48px] flex-1 items-center justify-center border border-ory-ink bg-ory-ink text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-all hover:bg-ory-ink/90 active:scale-[0.98]"
               >
-                {isAdding ? "Added to Bag ✓" : `Add to Bag — $${price * quantity}`}
+                {isAdding ? "Added to Bag ✓" : `Add to Bag — ${formatPrice(price * quantity, priceINR * quantity)}`}
               </button>
             </div>
 

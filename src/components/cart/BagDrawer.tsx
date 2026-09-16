@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { useCurrency, USD_TO_INR } from "@/context/CurrencyContext";
 
 export function BagDrawer() {
   const {
@@ -13,10 +14,12 @@ export function BagDrawer() {
     removeFromCart,
     updateQuantity,
     subtotal,
+    subtotalINR,
     freeShippingThreshold,
     isFreeShippingEligible,
     amountToFreeShipping,
   } = useCart();
+  const { formatTotal, formatPrice } = useCurrency();
 
   // Close on Escape key
   useEffect(() => {
@@ -44,6 +47,10 @@ export function BagDrawer() {
   if (!isBagOpen) return null;
 
   const progressPercent = Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
+  const shippingUSD = isFreeShippingEligible ? 0 : 8;
+  const shippingINR = Math.round(shippingUSD * USD_TO_INR);
+  const totalUSD = subtotal + shippingUSD;
+  const totalINR = subtotalINR + shippingINR;
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -94,7 +101,7 @@ export function BagDrawer() {
               </span>
             ) : (
               <span>
-                Add <strong className="text-ory-ink font-semibold">${amountToFreeShipping}</strong> for complimentary shipping
+                Add <strong className="text-ory-ink font-semibold">{formatTotal(amountToFreeShipping)}</strong> for complimentary shipping
               </span>
             )}
             <span className="text-[10px] text-ory-muted">{progressPercent}%</span>
@@ -149,7 +156,10 @@ export function BagDrawer() {
                           {item.name}
                         </h3>
                         <p className="font-serif text-[15px] text-ory-ink">
-                          ${item.price * item.quantity}
+                          {formatPrice(
+                            item.price * item.quantity,
+                            (item.priceINR ?? Math.round(item.price * USD_TO_INR)) * item.quantity
+                          )}
                         </p>
                       </div>
 
@@ -208,18 +218,18 @@ export function BagDrawer() {
               <div className="flex justify-between text-ory-body">
                 <span>Subtotal</span>
                 <span className="font-serif text-[16px] text-ory-ink">
-                  ${subtotal}.00
+                  {formatTotal(subtotal, subtotalINR)}
                 </span>
               </div>
               <div className="flex justify-between text-ory-muted text-[11px]">
                 <span>Atelier Shipping</span>
-                <span>{isFreeShippingEligible ? "Complimentary" : "$8.00"}</span>
+                <span>{isFreeShippingEligible ? "Complimentary" : formatTotal(shippingUSD, shippingINR)}</span>
               </div>
             </div>
 
             <div className="mt-4 pt-3 border-t border-ory-divider/30 flex justify-between font-serif text-[18px] text-ory-ink">
               <span>Estimated Total</span>
-              <span>${subtotal + (isFreeShippingEligible ? 0 : 8)}.00</span>
+              <span>{formatTotal(totalUSD, totalINR)}</span>
             </div>
 
             <p className="mt-2 text-[10px] text-ory-muted">

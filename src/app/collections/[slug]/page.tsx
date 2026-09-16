@@ -2,6 +2,7 @@ import { client } from "@/sanity/client";
 import { COLLECTION_BY_SLUG_QUERY } from "@/sanity/queries";
 import type { SanityCollection } from "@/sanity/types";
 import Image from "next/image";
+import { Price } from "@/components/Price";
 
 export const revalidate = 60;
 
@@ -76,7 +77,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
                         <h3 className="font-serif text-[20px] font-medium uppercase tracking-[0.14em]">
                           {product.name}
                         </h3>
-                        <p className="mt-1 text-[18px] text-ory-ink">${product.price}</p>
+                        <p className="mt-1 text-[18px] text-ory-ink"><Price usd={product.price} inr={product.priceINR} /></p>
                       </div>
                       {product.notes && (
                         <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-ory-accent font-medium">

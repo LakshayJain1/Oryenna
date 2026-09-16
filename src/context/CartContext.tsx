@@ -1,17 +1,27 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Product } from "@/data/products";
 
 export interface CartItem {
   id: string;
   name: string;
   price: number;
+  priceINR?: number;
   weight: string;
   notes: string;
   image: string;
   quantity: number;
   size?: string;
+}
+
+export interface CartProduct {
+  id: string;
+  name: string;
+  price: number;
+  priceINR?: number;
+  weight: string;
+  notes: string;
+  image: string;
 }
 
 export interface ScentSample {
@@ -24,12 +34,13 @@ export interface ScentSample {
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Product | { id: string; name: string; price: number; weight: string; notes: string; image: string }, quantity?: number, size?: string) => void;
+  addToCart: (product: CartProduct, quantity?: number, size?: string) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   totalItemsCount: number;
   subtotal: number;
+  subtotalINR: number;
   freeShippingThreshold: number;
   isFreeShippingEligible: boolean;
   amountToFreeShipping: number;
@@ -63,6 +74,7 @@ const INITIAL_CART_ITEMS: CartItem[] = [
     id: "amber",
     name: "Amber Candle",
     price: 78,
+    priceINR: 6499,
     weight: "290G / 10.2 OZ",
     notes: "Warm Woods · Amber · Smoke",
     image: "/images/products/ember.png",
@@ -73,6 +85,7 @@ const INITIAL_CART_ITEMS: CartItem[] = [
     id: "santal",
     name: "Santal Candle",
     price: 78,
+    priceINR: 6499,
     weight: "290G / 10.2 OZ",
     notes: "Sandalwood · Vanilla · Cedar",
     image: "/images/products/santal.png",
@@ -118,7 +131,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [items]);
 
   const addToCart = (
-    product: Product | { id: string; name: string; price: number; weight: string; notes: string; image: string },
+    product: CartProduct,
     quantity = 1,
     size = "290G (STANDARD)"
   ) => {
@@ -137,6 +150,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           id: product.id,
           name: product.name.includes("Candle") ? product.name : `${product.name} Candle`,
           price: product.price,
+          priceINR: product.priceINR,
           weight: product.weight,
           notes: product.notes,
           image: product.image,
@@ -183,6 +197,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const totalItemsCount = items.reduce((acc, item) => acc + item.quantity, 0);
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotalINR = items.reduce(
+    (acc, item) =>
+      acc +
+      ((item.priceINR ?? Math.round(item.price * 85)) as number) * item.quantity,
+    0
+  );
   const isFreeShippingEligible = subtotal >= FREE_SHIPPING_THRESHOLD;
   const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
 
@@ -196,6 +216,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         clearCart,
         totalItemsCount,
         subtotal,
+        subtotalINR,
         freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
         isFreeShippingEligible,
         amountToFreeShipping,

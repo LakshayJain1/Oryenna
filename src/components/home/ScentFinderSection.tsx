@@ -7,6 +7,7 @@ import type { SanityMoodRecommendation } from "@/sanity/types";
 import { urlForImage } from "@/sanity/image";
 import { moodRecommendations as fallbackMoods } from "@/data/products";
 import { useCart } from "@/context/CartContext";
+import { useCurrency, USD_TO_INR } from "@/context/CurrencyContext";
 
 const moods = [
   { id: "quiet", label: "Quiet" },
@@ -39,9 +40,12 @@ export function ScentFinderSection({ moodRecommendations }: ScentFinderSectionPr
 
   const candleName = sanityRec?.product?.name || fallbackRec?.candleName || "Oryenna Candle";
   const candlePrice = sanityRec?.product?.price ?? fallbackRec?.price ?? 78;
+  const candlePriceINR =
+    sanityRec?.product?.priceINR ?? Math.round(candlePrice * USD_TO_INR);
   const candleWeight = sanityRec?.product?.weight || fallbackRec?.weight || "290G / 10.2 OZ";
   const candleNotes = sanityRec?.product?.notes || fallbackRec?.notes || "";
   const candleId = sanityRec?.product?._id || fallbackRec?.candleId || "candle";
+  const { formatPrice } = useCurrency();
 
   const candleImage =
     sanityRec?.product?.image?.asset?.url ||
@@ -56,6 +60,7 @@ export function ScentFinderSection({ moodRecommendations }: ScentFinderSectionPr
         id: candleId,
         name: candleName,
         price: candlePrice,
+        priceINR: candlePriceINR,
         weight: candleWeight,
         notes: candleNotes,
         image: candleImage,
@@ -178,7 +183,7 @@ export function ScentFinderSection({ moodRecommendations }: ScentFinderSectionPr
                   onClick={handleQuickAdd}
                   className="flex h-[46px] items-center justify-center border border-ory-ink bg-ory-ink px-8 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-all hover:bg-ory-ink/90 active:scale-[0.98]"
                 >
-                  {isAdded ? "Added to Bag ✓" : `Add ${candleName} — $${candlePrice}`}
+                  {isAdded ? "Added to Bag ✓" : `Add ${candleName} — ${formatPrice(candlePrice, candlePriceINR)}`}
                 </button>
               </div>
             </div>
@@ -203,7 +208,7 @@ export function ScentFinderSection({ moodRecommendations }: ScentFinderSectionPr
                   {candleNotes}
                 </p>
                 <p className="mt-2 text-[11px] uppercase tracking-[0.18em] text-ory-muted">
-                  {candleWeight} · ${candlePrice}
+                  {candleWeight} · {formatPrice(candlePrice, candlePriceINR)}
                 </p>
               </div>
             </div>
